@@ -100,17 +100,34 @@ const links = [
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in srgb, var(--page) 88%, transparent);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid transparent;
-    transition:
-      border-color var(--dur) var(--ease-out),
-      box-shadow var(--dur) var(--ease-out);
+    /* No background of its own: the bar sits on the hero until you scroll. */
+    background: transparent;
   }
 
-  .site-header.is-condensed {
-    border-bottom-color: var(--rule);
+  /*
+   * The bar's surface is a separate layer whose opacity follows the same scroll
+   * progress as the logo, so it fades in with the scroll rather than snapping on
+   * at a threshold. At the top of the page it is fully transparent and the
+   * header reads as part of the hero; by the end of the runway it is the
+   * translucent, blurred bar with its hairline and shadow.
+   */
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: color-mix(in srgb, var(--page) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--rule);
     box-shadow: var(--shadow-s);
+    opacity: var(--scroll-progress, 0);
+    transition: opacity var(--dur) var(--ease-out);
+    pointer-events: none;
+  }
+
+  /* Without scripting the progress never advances, so show the solid bar. */
+  :global(html:not(.js)) .site-header::before {
+    opacity: 1;
   }
 
   .site-header__inner {
@@ -123,9 +140,13 @@ const links = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    /* No scroll-linked resize: hold the settled size from the start. */
+    /* No scroll-linked resize or fade: hold the settled bar from the start. */
     .site-header__lockup {
       height: var(--logo-min);
+    }
+
+    .site-header::before {
+      opacity: 1;
     }
   }
 

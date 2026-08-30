@@ -38,7 +38,6 @@ const t = useTranslations(locale);
         </p>
 
         <p class="hero__motto">{t.site.motto}</p>
-        <p class="hero__lead">{t.home.hero.lead}</p>
 
         <div class="hero__actions">
           <a class="button" href="#resources">{t.home.hero.ctaPrimary}</a>
@@ -130,6 +129,7 @@ const t = useTranslations(locale);
 
   .hero {
     position: relative;
+    /* Clips the washes' horizontal bleed; body's overflow-x does not reach them. */
     overflow: hidden;
     padding-block: var(--space-xl) var(--space-2xl);
   }
@@ -138,6 +138,16 @@ const t = useTranslations(locale);
     position: absolute;
     inset: 0;
     pointer-events: none;
+    /*
+     * The washes are taller than the hero, so `overflow: hidden` was slicing
+     * their blur mid-gradient and drawing hard lines across the full width —
+     * one right under the transparent header, reading as exactly the border the
+     * header is meant not to have. Fading the whole layer out top and bottom
+     * removes the cut regardless of how the washes are sized or placed. Their
+     * sideways bleed is still clipped, where the viewport edge hides it.
+     */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 76%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 76%, transparent 100%);
   }
 
   .hero__blob {
@@ -147,11 +157,18 @@ const t = useTranslations(locale);
     opacity: 0.5;
   }
 
+  /*
+   * Both washes clear the section's top edge. Crossing it meant the clip cut the
+   * blur mid-gradient, drawing a hard line straight across the page directly
+   * under the transparent header — reading as exactly the border the header is
+   * meant not to have. Sideways they still bleed, where the viewport edge hides
+   * the cut.
+   */
   .hero__blob--mint {
     width: min(32rem, 66vw);
     aspect-ratio: 1;
-    inset-block-start: -14rem;
-    inset-inline-start: -12rem;
+    inset-block-start: 1rem;
+    inset-inline-start: -15rem;
     background: var(--c-opal);
     animation: drift-a 26s var(--ease-out) infinite alternate;
   }
@@ -159,8 +176,8 @@ const t = useTranslations(locale);
   .hero__blob--coral {
     width: min(28rem, 62vw);
     aspect-ratio: 1;
-    inset-block-start: 2rem;
-    inset-inline-end: -10rem;
+    inset-block-start: 4rem;
+    inset-inline-end: -11rem;
     background: var(--c-pale-pink);
     animation: drift-b 32s var(--ease-out) infinite alternate;
   }
@@ -202,7 +219,6 @@ const t = useTranslations(locale);
   .hero__eyebrow,
   .hero__bars,
   .hero__motto,
-  .hero__lead,
   .hero__actions,
   .hero__figure {
     animation: rise 0.75s var(--ease-out) backwards;
@@ -217,11 +233,8 @@ const t = useTranslations(locale);
   .hero__motto {
     animation-delay: 0.26s;
   }
-  .hero__lead {
-    animation-delay: 0.4s;
-  }
   .hero__actions {
-    animation-delay: 0.48s;
+    animation-delay: 0.38s;
   }
   .hero__figure {
     animation-delay: 0.2s;
@@ -271,24 +284,19 @@ const t = useTranslations(locale);
   }
 
   .hero__motto {
-    max-width: 18ch;
-    /* Quire Sans Black — the hero's display voice, now that the name is in the bar. */
-    font-weight: 900;
-    font-size: var(--step-5);
-    line-height: 1.02;
-    letter-spacing: -0.025em;
+    max-width: 20ch;
+    /* Regular weight: the name is already stated boldly in the bar above. */
+    font-weight: 400;
+    font-size: var(--step-4);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
     color: var(--c-eerie);
     text-wrap: balance;
   }
 
   :global(:lang(zh)) .hero__motto {
-    letter-spacing: 0.01em;
-    line-height: 1.2;
-  }
-
-  .hero__lead {
-    max-width: 52ch;
-    color: var(--ink-muted);
+    letter-spacing: 0.02em;
+    line-height: 1.35;
   }
 
   .hero__actions {
