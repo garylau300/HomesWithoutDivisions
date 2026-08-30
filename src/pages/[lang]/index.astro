@@ -30,15 +30,7 @@ const t = useTranslations(locale);
       <div class="hero__content">
         <p class="eyebrow hero__eyebrow">{t.home.hero.eyebrow}</p>
 
-        {/* Chinese above and larger than English, per the style guide. */}
-        <h1 class="hero__title">
-          <span class="hero__title-primary">{t.site.name}</span>
-          <span class="hero__title-secondary" lang={locale === 'zh' ? 'en-GB' : 'zh-Hant-HK'}>
-            {t.site.nameSecondary}
-          </span>
-        </h1>
-
-        {/* The three pillars, as a colour signature under the name. */}
+        {/* The three pillars, as a colour signature above the motto. */}
         <p class="hero__bars" aria-hidden="true">
           <span class="hero__bar hero__bar--communication"></span>
           <span class="hero__bar hero__bar--terms"></span>
@@ -208,7 +200,6 @@ const t = useTranslations(locale);
 
   /* Each element rises in turn, so the eye lands on the motto. */
   .hero__eyebrow,
-  .hero__title,
   .hero__bars,
   .hero__motto,
   .hero__lead,
@@ -220,14 +211,11 @@ const t = useTranslations(locale);
   .hero__eyebrow {
     animation-delay: 0.05s;
   }
-  .hero__title {
-    animation-delay: 0.14s;
-  }
   .hero__bars {
-    animation-delay: 0.24s;
+    animation-delay: 0.16s;
   }
   .hero__motto {
-    animation-delay: 0.32s;
+    animation-delay: 0.26s;
   }
   .hero__lead {
     animation-delay: 0.4s;
@@ -244,31 +232,6 @@ const t = useTranslations(locale);
       opacity: 0;
       transform: translateY(1.5rem);
     }
-  }
-
-  .hero__title {
-    display: grid;
-    gap: 0.06em;
-  }
-
-  .hero__title-primary {
-    /* Quire Sans Black — the boldest weight the family gives us. */
-    font-weight: 900;
-    font-size: var(--step-6);
-    line-height: 0.95;
-    letter-spacing: -0.03em;
-  }
-
-  :global(:lang(zh)) .hero__title-primary {
-    letter-spacing: 0.02em;
-  }
-
-  .hero__title-secondary {
-    font-family: var(--font-sans);
-    font-size: var(--step-2);
-    font-weight: 700;
-    letter-spacing: 0;
-    color: var(--ink-muted);
   }
 
   /* ---- The three-colour signature ------------------------------------------ */
@@ -308,13 +271,19 @@ const t = useTranslations(locale);
   }
 
   .hero__motto {
-    max-width: 22ch;
-    font-size: var(--step-3);
-    font-weight: 700;
-    line-height: var(--leading-snug);
-    letter-spacing: var(--tracking-tight);
+    max-width: 18ch;
+    /* Quire Sans Black — the hero's display voice, now that the name is in the bar. */
+    font-weight: 900;
+    font-size: var(--step-5);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
     color: var(--c-eerie);
     text-wrap: balance;
+  }
+
+  :global(:lang(zh)) .hero__motto {
+    letter-spacing: 0.01em;
+    line-height: 1.2;
   }
 
   .hero__lead {

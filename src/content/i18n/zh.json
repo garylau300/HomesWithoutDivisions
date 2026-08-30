@@ -11,8 +11,8 @@
     "nameSecondary": "Homes Without Divisions",
     "motto": "推動基層住屋法律保障",
     "mottoSecondary": "Advancing the next generation of equitable tenancy",
-    "initiative": "公益法香港 Pro Bono HK 的社區法律充權計劃",
-    "description": "家無分隔是公益法香港為居於分間單位（劏房）租客而設的社區法律充權計劃。三份免費資源：物業狀況紀錄表、分間單位租約範本、分間單位租務解難手冊。"
+    "initiative": "公益法香港 Pro Bono HK 的社區法律賦能起動計劃",
+    "description": "家無分隔是公益法香港為居於分間單位（劏房）租客而設的社區法律賦能起動計劃。三份免費資源：物業狀況紀錄表、分間單位租約範本、分間單位租務解難手冊。"
   },
   "nav": {
     "skipToContent": "跳至主要內容",
@@ -25,8 +25,8 @@
   "home": {
     "title": "家無分隔｜劏房租客的法律資源",
     "hero": {
-      "eyebrow": "公益法香港社區法律充權計劃",
-      "lead": "家無分隔是公益法香港（Pro Bono HK）為居於分間單位的租客而設的社區法律充權計劃。我們的使命，是透過採納和推動國際法律標準與本地法規，推動香港下一代的公平租住關係。",
+      "eyebrow": "公益法香港社區法律賦能起動計劃",
+      "lead": "家無分隔是公益法香港（Pro Bono HK）為居於分間單位的租客而設的社區法律賦能起動計劃。我們的使命，是透過採納和推動國際法律標準與本地法規，推動香港下一代的公平租住關係。",
       "ctaPrimary": "查看三大資源",
       "ctaSecondary": "認識這個計劃"
     },
@@ -48,7 +48,7 @@
     "hero": {
       "eyebrow": "關於我們",
       "heading": "跨越法律與租住現實之間的分隔",
-      "lead": "家無分隔是公益法香港（Pro Bono HK）為居於分間單位的租客而設的社區法律充權計劃。我們的使命，是推動香港下一代的公平租住關係。"
+      "lead": "家無分隔是公益法香港（Pro Bono HK）為居於分間單位的租客而設的社區法律賦能起動計劃。我們的使命，是推動香港下一代的公平租住關係。"
     },
     "mission": {
       "eyebrow": "我們的使命",
@@ -154,6 +154,7 @@
   "footer": {
     "licence": "本網站的文件可為非牟利用途自由複製及分發，但必須完整轉載，不得更改。",
     "copyright": "© Pro Bono Hong Kong Limited.",
-    "backToTop": "返回頁首"
+    "backToTop": "返回頁首",
+    "partnerAlt": "公益法香港 Pro Bono HK"
   }
 }

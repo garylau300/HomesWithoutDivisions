@@ -37,6 +37,15 @@ const logoAlt = `${t.site.name} ${t.site.nameSecondary}`;
     </nav>
 
     <div class="site-footer__legal">
+      <img
+        class="site-footer__partner"
+        src="/brand/probono-hk.png"
+        alt={t.footer.partnerAlt}
+        width="472"
+        height="190"
+        loading="lazy"
+        decoding="async"
+      />
       <p class="site-footer__initiative">{t.site.initiative}</p>
       <p>{t.footer.licence}</p>
       <p class="site-footer__copyright">
@@ -76,6 +85,8 @@ const logoAlt = `${t.site.name} ${t.site.nameSecondary}`;
   .site-footer__identity {
     display: grid;
     justify-items: start;
+    /* Without this the grid row stretches and the motto drifts from the lockup. */
+    align-content: start;
     gap: var(--space-xs);
   }
 
@@ -87,6 +98,10 @@ const logoAlt = `${t.site.name} ${t.site.nameSecondary}`;
   .site-footer__motto {
     font-size: var(--step--1);
     color: var(--ink-muted);
+  }
+
+  .site-footer__nav {
+    align-self: start;
   }
 
   .site-footer__nav ul {
@@ -114,6 +129,12 @@ const logoAlt = `${t.site.name} ${t.site.nameSecondary}`;
     font-size: var(--step--1);
     color: var(--ink-muted);
     max-width: 46ch;
+  }
+
+  .site-footer__partner {
+    width: auto;
+    height: 3.25rem;
+    margin-block-end: var(--space-3xs);
   }
 
   .site-footer__initiative {

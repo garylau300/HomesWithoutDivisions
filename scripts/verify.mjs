@@ -254,6 +254,18 @@ console.log('\n── Download picker without JavaScript ───────�
   );
   if (!ok) failures.push('download picker does not work without JavaScript');
 
+  /*
+   * The header logo's size is interpolated from a scroll variable that only
+   * JavaScript sets. Without it the lockup must settle at its small size rather
+   * than stay stuck at the large one.
+   */
+  const logoHeight = await tab
+    .locator('.site-header__lockup')
+    .evaluate((el) => el.getBoundingClientRect().height);
+  const logoOk = logoHeight > 0 && logoHeight < 48;
+  console.log(`  ${logoOk ? '✓' : '✗'} header logo settles small without scripting (${logoHeight.toFixed(1)}px)`);
+  if (!logoOk) failures.push(`header logo is ${logoHeight.toFixed(1)}px without JavaScript`);
+
   const langHref = await tab.locator('.lang-toggle__option').nth(1).getAttribute('href');
   console.log(`  ${langHref === '/en' ? '✓' : '✗'} language toggle is a plain link (${langHref})`);
   if (langHref !== '/en') failures.push('language toggle is not a link without JavaScript');
@@ -266,7 +278,7 @@ console.log('\n── Reduced motion ──────────────�
   const tab = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
   await tab.goto(`${origin}/zh`, { waitUntil: 'networkidle' });
   const durations = await tab.evaluate(() =>
-    ['.hero__title', '.hero__blob--mint', '.house-icon__heart-stroke']
+    ['.hero__motto', '.hero__blob--mint', '.hero__arch', '.house-icon__heart-stroke', '.house-icon__division']
       .map((selector) => {
         const el = document.querySelector(selector);
         if (!el) return null;
@@ -351,6 +363,24 @@ console.log('\n── Keyboard ────────────────�
   if (!reachedToggle) failures.push('language toggle is not keyboard reachable');
   if (!reachedPicker) failures.push('download picker is not keyboard reachable');
   if (ringless) failures.push(`no focus ring on <${ringless.tag}> ${ringless.id ?? ringless.label}`);
+  await tab.close();
+}
+
+console.log('\n── Document structure ───────────────────────────────────');
+for (const page of PAGES.filter((p) => p.path !== '/')) {
+  const tab = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await tab.goto(`${origin}${page.path}`, { waitUntil: 'networkidle' });
+  const info = await tab.evaluate(() => {
+    const h1s = [...document.querySelectorAll('h1')];
+    return {
+      count: h1s.length,
+      // The landing page's h1 is the lockup, so its text comes from the alt.
+      text: h1s.map((h) => (h.textContent.trim() || h.querySelector('img')?.alt || '')).join(' | '),
+    };
+  });
+  const ok = info.count === 1 && info.text.length > 0;
+  console.log(`  ${ok ? '✓' : '✗'} ${page.path} — ${info.count} h1: "${info.text}"`);
+  if (!ok) failures.push(`${page.path} has ${info.count} h1 (need exactly one, with text)`);
   await tab.close();
 }
 
