@@ -74,7 +74,8 @@ local setup needed.
 
 ## Design
 
-Follows the **HWD Style Guide v.1**.
+Follows the **HWD Style Guide v.1** for colour, layout and logo use.
+The typefaces are a later project decision — see Typefaces below.
 
 | | |
 |---|---|
@@ -99,13 +100,28 @@ Chinese is set above and larger than English throughout, as the guide requires.
 
 ### Typefaces
 
-IBM Plex Sans (primary) and Noto Sans TC (Chinese) load from Google Fonts.
+| Role | Typeface |
+|---|---|
+| Headings | **Zilla Slab** |
+| Body and UI | **Quire Sans**, falling back to Source Sans 3 |
+| Chinese, throughout | **Noto Sans TC** (思源) |
 
-**Tabarra Pro** — the guide's secondary, friendlier face — is a commercial
-typeface and its files are not in this repository, so `--font-display` currently
-falls back to IBM Plex Sans, which the guide also sanctions for headings. To
-enable it, add the licensed `.woff2` files to `public/fonts/` and uncomment
-`src/styles/tabarra.css`; nothing else changes.
+Zilla Slab is open (SIL OFL) and loads from Google Fonts, so headings need
+nothing added.
+
+**Quire Sans is a commercial Monotype typeface** and its files are not in this
+repository, so `--font-sans` currently falls back to **Source Sans 3** — an open
+humanist sans of the same genre, and what readers actually see today. To enable
+Quire Sans, add the licensed `.woff2` files to `public/fonts/` and add
+`@import './quire-sans.css';` to `src/styles/base.css`; nothing else changes.
+
+Neither Zilla Slab nor Quire Sans covers Chinese, so every Chinese glyph is set
+in Noto Sans TC, as the style guide requires. That means English headings are
+slab-serif while Chinese headings stay sans — deliberate, and switchable to
+Noto Serif TC (思源宋體) if the slab feel should carry across both languages.
+
+This replaces the IBM Plex Sans and Tabarra pairing named in Style Guide v.1, at
+the project's request; the palette and layout rules below are unchanged.
 
 ### The logo
 

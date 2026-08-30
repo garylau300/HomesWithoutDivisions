@@ -1,0 +1,61 @@
+/*
+ * Quire Sans — the site's primary typeface.
+ *
+ * Quire Sans is a commercial Monotype typeface. Its files are not in this
+ * repository and cannot be redistributed here, so `--font-sans` currently falls
+ * back to Source Sans 3, which is loaded from Google Fonts and is what readers
+ * see today. The site is complete and correct without Quire Sans.
+ *
+ * TO ENABLE:
+ *   1. Put the licensed web font files in public/fonts/ using the names below.
+ *   2. Add `@import './quire-sans.css';` to the top of src/styles/base.css.
+ *
+ * Nothing else needs to change: --font-sans and --font-display already prefer
+ * this family, so it takes over the moment the files resolve.
+ *
+ * Note that Quire Sans has no Chinese coverage. Chinese continues to be set in
+ * Noto Sans TC (思源), as the HWD Style Guide requires, whether or not Quire
+ * Sans is present.
+ */
+
+/*
+@font-face {
+  font-family: 'Quire Sans';
+  src:
+    local('Quire Sans'),
+    url('/fonts/QuireSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Quire Sans';
+  src:
+    local('Quire Sans Italic'),
+    url('/fonts/QuireSans-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Quire Sans';
+  src:
+    local('Quire Sans Medium'),
+    url('/fonts/QuireSans-Medium.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Quire Sans';
+  src:
+    local('Quire Sans Bold'),
+    url('/fonts/QuireSans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+*/
