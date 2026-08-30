@@ -366,6 +366,42 @@ console.log('\n── Keyboard ────────────────�
   await tab.close();
 }
 
+console.log('\n── Header lockup ────────────────────────────────────────');
+{
+  /*
+   * Both states matter. The scroll-linked size is an interpolating calc, and a
+   * clamp() substituted into it once resolved invalid and collapsed the lockup
+   * to 0px — but only after scrolling, which a top-of-page check never sees.
+   */
+  const NATURAL = 660 / 128;
+  const tab = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  for (const width of [320, 390, 600, 768, 1024, 1440]) {
+    await tab.setViewportSize({ width, height: 800 });
+    await tab.goto(`${origin}/zh`, { waitUntil: 'networkidle' });
+    const read = () =>
+      tab.evaluate(() => {
+        const img = document.querySelector('.site-header__lockup');
+        const box = img.getBoundingClientRect();
+        return { w: box.width, h: box.height, shown: getComputedStyle(img).display !== 'none' };
+      });
+    const top = await read();
+    await tab.evaluate(() => window.scrollTo({ top: 600, behavior: 'instant' }));
+    await tab.waitForTimeout(220);
+    const scrolled = await read();
+
+    const skew = (s) => (s.h > 0 ? Math.abs((s.w / s.h - NATURAL) / NATURAL) * 100 : 999);
+    const ok =
+      top.shown && scrolled.shown && top.h > 20 && scrolled.h > 20 &&
+      skew(top) < 1 && skew(scrolled) < 1;
+    console.log(
+      `  ${ok ? '✓' : '✗'} ${String(width).padStart(4)}px — top ${top.h.toFixed(0)}px, ` +
+        `scrolled ${scrolled.h.toFixed(0)}px, aspect within ${Math.max(skew(top), skew(scrolled)).toFixed(1)}%`,
+    );
+    if (!ok) failures.push(`header lockup wrong at ${width}px (top ${top.h}px, scrolled ${scrolled.h}px)`);
+  }
+  await tab.close();
+}
+
 console.log('\n── Document structure ───────────────────────────────────');
 for (const page of PAGES.filter((p) => p.path !== '/')) {
   const tab = await browser.newPage({ viewport: { width: 1280, height: 900 } });

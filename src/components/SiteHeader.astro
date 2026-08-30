@@ -1,7 +1,6 @@
 ---
 import { localeHref, useTranslations, type Locale } from '../lib/i18n';
 import LangToggle from './LangToggle.astro';
-import HouseIcon from './HouseIcon.astro';
 
 interface Props {
   locale: Locale;
@@ -31,7 +30,7 @@ const links = [
   <div class="site-header__inner container">
     <Wrapper class="site-header__title">
       <a class="site-header__logo" href={localeHref(locale)} aria-label={`${logoAlt} — ${t.nav.home}`}>
-      {/* The full lockup where there is room; the mark alone on a narrow screen. */}
+      {/* The full lockup at every width; the bar reflows to two rows to keep it. */}
       <img
         class="site-header__lockup"
         src="/brand/hwd-lockup-660.png"
@@ -40,7 +39,6 @@ const links = [
         height="128"
         decoding="async"
       />
-        <HouseIcon id="header-mark" class="site-header__mark" size={38} />
       </a>
     </Wrapper>
 
@@ -184,10 +182,33 @@ const links = [
     --logo-max: 2.5rem;
   }
 
+  /*
+   * Stepped rather than fluid, and deliberately so: a clamp() here is substituted
+   * three times into the interpolating calc below, where it resolved invalid and
+   * collapsed the lockup to 0px height the moment the page was scrolled. Plain
+   * lengths keep that calc to simple arithmetic.
+   */
   .site-header--prominent {
     --logo-min: 2.25rem;
-    /* Fluid, so the bar still fits its nav on a narrow tablet. */
-    --logo-max: clamp(2.75rem, 1.9rem + 2.4vw, 3.75rem);
+    --logo-max: 2.75rem;
+  }
+
+  @media (min-width: 38rem) {
+    .site-header--prominent {
+      --logo-max: 3rem;
+    }
+  }
+
+  @media (min-width: 56rem) {
+    .site-header--prominent {
+      --logo-max: 3.4rem;
+    }
+  }
+
+  @media (min-width: 75rem) {
+    .site-header--prominent {
+      --logo-max: 3.75rem;
+    }
   }
 
   .site-header__lockup {
@@ -203,16 +224,6 @@ const links = [
      at its largest for the whole page. Settle it at the small size instead. */
   :global(html:not(.js)) .site-header__lockup {
     height: var(--logo-min);
-  }
-
-  /*
-   * :global() is required, not incidental. The mark is rendered by HouseIcon, so
-   * it carries that component's scope attribute rather than this one's — a plain
-   * `.site-header__mark` rule here never matches it, which is how the lockup and
-   * the mark ended up showing side by side on wide screens.
-   */
-  :global(.site-header__mark) {
-    display: none;
   }
 
   .site-header__nav {
@@ -255,16 +266,23 @@ const links = [
     text-decoration-thickness: 2px;
   }
 
-  @media (max-width: 44rem) {
-    .site-header__lockup {
-      display: none;
-    }
-
-    :global(.site-header__mark) {
-      display: block;
+  /*
+   * Below this the lockup and the nav cannot share a row without shrinking the
+   * wordmark to something unreadable — at 320px a single row leaves it about
+   * 15px tall. The bar becomes two rows instead, so the whole logo, text and
+   * all, survives down to the narrowest phone.
+   */
+  @media (max-width: 38rem) {
+    .site-header__inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: start;
+      gap: var(--space-2xs);
     }
 
     .site-header__nav {
+      width: 100%;
+      justify-content: space-between;
       gap: var(--space-2xs);
     }
   }
