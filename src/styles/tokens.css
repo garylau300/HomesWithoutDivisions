@@ -41,11 +41,18 @@
    *   Eerie Black ↔ Floral White
    */
   --accent-communication: var(--c-keppel);
-  --accent-communication-tint: var(--c-opal);
   --accent-terms: var(--c-yellow);
-  --accent-terms-tint: var(--c-floral);
   --accent-solution: var(--c-coral);
-  --accent-solution-tint: var(--c-pale-pink);
+
+  /*
+   * The tints are the palette's own pairing colours lifted towards Floral White,
+   * so a card header reads as a whisper of its pillar rather than a slab of it.
+   * Lightening here lightens the card headers, the download panels and the
+   * diagram badges together.
+   */
+  --accent-communication-tint: color-mix(in srgb, var(--c-opal) 50%, var(--c-floral));
+  --accent-terms-tint: var(--c-floral);
+  --accent-solution-tint: color-mix(in srgb, var(--c-pale-pink) 50%, var(--c-floral));
 
   /* ---- Type -------------------------------------------------------------- */
   /*
@@ -69,6 +76,8 @@
   --step-3: clamp(1.625rem, 1.4rem + 1.1vw, 2.375rem);
   --step-4: clamp(2rem, 1.55rem + 2.2vw, 3.25rem);
   --step-5: clamp(2.5rem, 1.7rem + 3.9vw, 4.5rem);
+  /* Hero display size, set in Quire Sans Black. */
+  --step-6: clamp(2.75rem, 1.6rem + 5.6vw, 5.5rem);
 
   --leading-tight: 1.15;
   --leading-snug: 1.3;

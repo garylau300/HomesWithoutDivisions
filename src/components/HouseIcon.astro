@@ -7,7 +7,13 @@
  * public/favicon.svg exactly.
  *
  * `animated` draws the heart's outline on first paint — the heart appearing to
- * bridge the division. Suppressed under prefers-reduced-motion.
+ * bridge the division, and lifts the roof slightly. Both suppressed under
+ * prefers-reduced-motion.
+ *
+ * NOTE for callers: the `class` you pass lands on an element rendered *here*, so
+ * it carries this component's scope attribute. A plain `.your-class { … }` rule
+ * in the calling component will not match it — wrap it in `:global()`. Both
+ * SiteHeader and the landing hero learned this the hard way.
  */
 interface Props {
   /** Unique per instance: SVG ids are document-global. */
@@ -50,6 +56,7 @@ const HEART =
   <g mask={`url(#${maskId})`} fill="currentColor">
     <path d="M76 254L288 70L501 254V497H76Z"></path>
     <path
+      class="house-icon__roof"
       d="M30 238L288 31L546 238"
       fill="none"
       stroke="currentColor"
@@ -63,6 +70,22 @@ const HEART =
   .house-icon {
     color: var(--c-coral);
     flex: none;
+  }
+
+  /*
+   * The roof lifts a little and stays raised — the house opening up. Only in the
+   * animated (hero) variant; the header, footer and favicon keep the mark exactly
+   * as the style guide draws it.
+   */
+  .house-icon--animated .house-icon__roof {
+    animation: lift-roof 1.1s var(--ease-spring) 0.15s backwards;
+    transform: translateY(-15px);
+  }
+
+  @keyframes lift-roof {
+    from {
+      transform: translateY(0);
+    }
   }
 
   /* The heart draws itself out of the coral, bridging the division. */
@@ -79,6 +102,10 @@ const HEART =
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .house-icon--animated .house-icon__roof {
+      animation: none;
+    }
+
     .house-icon--animated .house-icon__heart-stroke {
       stroke-dasharray: none;
       stroke-dashoffset: 0;

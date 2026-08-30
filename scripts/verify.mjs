@@ -107,6 +107,9 @@ const PALETTE = {
 
 /* --footer-bg in tokens.css: a neutral beige-grey band, not a brand colour. */
 PALETTE.footer = mix(PALETTE.jet, PALETTE.floral, 7);
+/* The card headers use the pairing colours lifted halfway to Floral White. */
+PALETTE.opalTint = mix(PALETTE.opal, PALETTE.floral, 50);
+PALETTE.pinkTint = mix(PALETTE.palePink, PALETTE.floral, 50);
 
 /**
  * Every foreground/background pair the site renders where the contrast has to
@@ -120,10 +123,10 @@ const PAIRS = [
   { name: 'muted text on card', fg: PALETTE.jet, bg: PALETTE.white, min: 4.5 },
   { name: 'text on the footer band', fg: PALETTE.eerie, bg: PALETTE.footer, min: 4.5 },
   { name: 'muted text on the footer band', fg: PALETTE.jet, bg: PALETTE.footer, min: 4.5 },
-  { name: 'text on Pale Pink (card head)', fg: PALETTE.eerie, bg: PALETTE.palePink, min: 4.5 },
-  { name: 'muted text on Pale Pink', fg: PALETTE.jet, bg: PALETTE.palePink, min: 4.5 },
-  { name: 'text on Opal (card head)', fg: PALETTE.eerie, bg: PALETTE.opal, min: 4.5 },
-  { name: 'muted text on Opal', fg: PALETTE.jet, bg: PALETTE.opal, min: 4.5 },
+  { name: 'text on the light pink card head', fg: PALETTE.eerie, bg: PALETTE.pinkTint, min: 4.5 },
+  { name: 'muted text on the light pink card head', fg: PALETTE.jet, bg: PALETTE.pinkTint, min: 4.5 },
+  { name: 'text on the light mint card head', fg: PALETTE.eerie, bg: PALETTE.opalTint, min: 4.5 },
+  { name: 'muted text on the light mint card head', fg: PALETTE.jet, bg: PALETTE.opalTint, min: 4.5 },
   { name: 'text on Cyber Yellow', fg: PALETTE.eerie, bg: PALETTE.yellow, min: 4.5 },
   { name: 'text on Coral', fg: PALETTE.eerie, bg: PALETTE.coral, min: 4.5 },
   { name: 'text on Keppel', fg: PALETTE.eerie, bg: PALETTE.keppel, min: 4.5 },
@@ -263,7 +266,7 @@ console.log('\n── Reduced motion ──────────────�
   const tab = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
   await tab.goto(`${origin}/zh`, { waitUntil: 'networkidle' });
   const durations = await tab.evaluate(() =>
-    ['.hero__title', '.hero__blob--pink', '.house-icon__heart-stroke']
+    ['.hero__title', '.hero__blob--mint', '.house-icon__heart-stroke']
       .map((selector) => {
         const el = document.querySelector(selector);
         if (!el) return null;

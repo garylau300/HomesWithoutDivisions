@@ -1,6 +1,5 @@
 ---
 import { localeHref, useTranslations, type Locale } from '../lib/i18n';
-import HouseIcon from './HouseIcon.astro';
 
 interface Props {
   locale: Locale;
@@ -10,22 +9,23 @@ interface Props {
 const { locale, page } = Astro.props;
 const t = useTranslations(locale);
 const year = new Date().getFullYear();
+const logoAlt = `${t.site.name} ${t.site.nameSecondary}`;
 ---
 
 <footer class="site-footer">
   <div class="container site-footer__inner">
     <div class="site-footer__identity">
-      <HouseIcon id="footer-mark" size={44} />
-      <div>
-        {/* Chinese above and larger than English, per the style guide. */}
-        <p class="site-footer__name" lang={locale === 'zh' ? undefined : 'zh-Hant-HK'}>
-          {locale === 'zh' ? t.site.name : t.site.nameSecondary}
-        </p>
-        <p class="site-footer__name-secondary" lang={locale === 'zh' ? 'en-GB' : undefined}>
-          {locale === 'zh' ? t.site.nameSecondary : t.site.name}
-        </p>
-        <p class="site-footer__motto">{t.site.motto}</p>
-      </div>
+      {/* The project lockup itself, as the header uses it. */}
+      <img
+        class="site-footer__lockup"
+        src="/brand/hwd-lockup-660.png"
+        alt={logoAlt}
+        width="660"
+        height="128"
+        loading="lazy"
+        decoding="async"
+      />
+      <p class="site-footer__motto">{t.site.motto}</p>
     </div>
 
     <nav class="site-footer__nav" aria-label={t.nav.menu}>
@@ -74,26 +74,17 @@ const year = new Date().getFullYear();
   }
 
   .site-footer__identity {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-s);
+    display: grid;
+    justify-items: start;
+    gap: var(--space-xs);
   }
 
-  .site-footer__name {
-    font-family: var(--font-display);
-    font-size: var(--step-2);
-    font-weight: 700;
-    line-height: var(--leading-tight);
-  }
-
-  .site-footer__name-secondary {
-    font-size: var(--step-0);
-    font-weight: 600;
-    line-height: var(--leading-snug);
+  .site-footer__lockup {
+    width: auto;
+    height: 3.25rem;
   }
 
   .site-footer__motto {
-    margin-block-start: var(--space-2xs);
     font-size: var(--step--1);
     color: var(--ink-muted);
   }

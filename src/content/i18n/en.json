@@ -26,7 +26,7 @@
     "title": "Homes Without Divisions | Legal resources for subdivided unit tenants",
     "hero": {
       "eyebrow": "A Pro Bono HK community legal empowerment initiative",
-      "lead": "Free legal resources for tenants in Hong Kong subdivided units. Working with tenants, frontline workers and landlords, we turn protection on paper into something you can actually use.",
+      "lead": "Homes Without Divisions is a community legal empowerment initiative by Pro Bono HK for tenants living in subdivided units. Our mission is to advance the next generation of equitable tenancy in Hong Kong, by adopting and facilitating both international legal standards and domestic regulations.",
       "ctaPrimary": "See the three resources",
       "ctaSecondary": "About the project"
     },
@@ -107,34 +107,34 @@
     "schedule-of-condition": {
       "name": "Schedule of Condition",
       "nameSecondary": "物業狀況紀錄表",
-      "when": "Before you move in",
-      "summary": "Record the real condition of the unit, the shared facilities and the key tenancy facts, item by item, so both sides start from the same set of facts.",
+      "when": "Before you enter into a tenancy",
+      "summary": "Ask your landlord or estate agent to fill this in before signing, to check on the property conditions and provide important tenancy information.",
       "points": [
-        "Log the condition of every fitting and appliance, and raise anything missing or broken at once",
-        "Confirm how the common areas may be used",
-        "Ask whether the flat has Basic Housing Unit recognition or grace-period registration"
+        "Check and record the condition of each item. If something needs repair or is missing, ask the Landlord to fix it",
+        "Check and ask the Landlord for any common area access",
+        "Ask the Landlord important questions in the rest of the form, so you know what you are getting into"
       ]
     },
     "model-tenancy-agreement": {
       "name": "Model Tenancy Agreement",
       "nameSecondary": "分間單位租約範本",
-      "when": "When you sign",
-      "summary": "A lawyer-checked, party-neutral tenancy agreement in plain language that reflects what the law actually requires, and adds nothing extra to either side's burden.",
+      "when": "When you complete and sign",
+      "summary": "Party-neutral drafting verified by lawyers that aims to accurately reflect the statutory reality. It does not impose extra burden on either landlord or tenant beyond what is required under the law.",
       "points": [
-        "Avoids the invalid and unlawful terms common in off-the-shelf templates",
-        "Plain language without losing legal accuracy",
-        "Optional addenda covering pets, landlord's agents and more"
+        "Many common stationery-shop templates contain invalid or even illegal terms that do not apply to subdivided units letting",
+        "Drafted in plain language while retaining legal accuracy, avoiding unnecessary legalese",
+        "Optional Addenda covering pets, landlord's agents, and transitional arrangements under the Basic Housing Units policy"
       ]
     },
     "pocket-tenancy-clinic": {
       "name": "Pocket Tenancy Clinic",
       "nameSecondary": "分間單位租務解難手冊",
-      "when": "When something goes wrong",
-      "summary": "A clinic you can carry. Work through the diagnostics form to see where you stand, then go to the Treatment Room your answers point to — each with concrete steps to take.",
+      "when": "When issues come up, or before things go wrong",
+      "summary": "An interactive pocket clinic that simulates the intake, diagnostic and treatment processes of a working pro bono clinic, rather than a static list of rights to be read once.",
       "points": [
-        "Tenancy Risk Diagnostics Form: three parts, 36 statements",
-        "Ten Treatment Rooms for the ten most common tenancy problems",
-        "Two Emergency Rooms, for a tenant's death and for anyone claiming to act for your landlord"
+        "A Tenancy Risk Diagnostics Form, to see where your tenancy stands",
+        "Ten colour-coded Treatment Rooms for the top ten tenancy issues",
+        "Two further Emergency Rooms, each with concrete action steps"
       ]
     }
   },

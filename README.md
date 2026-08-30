@@ -123,11 +123,11 @@ Each pillar has one colour across the whole site — cards, the pillars strip an
 the diagram all read from the same tokens in `tokens.css`, so changing a pillar's
 colour is a one-line edit that propagates everywhere:
 
-| Pillar | Resource | Accent | Tint |
+| Pillar | Resource | Accent | Tint (card headers) |
 |---|---|---|---|
-| Transparent communication | Schedule of Condition | Keppel | Opal |
+| Transparent communication | Schedule of Condition | Keppel | Opal, half-lifted to Floral White |
 | Fair terms and conduct | Model Tenancy Agreement | Cyber Yellow | Floral White |
-| Appropriate solution | Pocket Tenancy Clinic | Orange Red Crayola | Pale Pink |
+| Appropriate solution | Pocket Tenancy Clinic | Orange Red Crayola | Pale Pink, half-lifted to Floral White |
 
 Each card also carries a numeral matching the diagram, so the pairing never
 depends on colour alone.
