@@ -36,7 +36,8 @@ const ordered = PILLARS.map((pillar, index) => ({
   ...pillar,
   numeral: index + 1,
   circle: CIRCLES[pillar.id],
-  copy: t.deliverables[pillar.deliverable],
+  copy: t.pillars[pillar.id],
+  resource: t.deliverables[pillar.deliverable],
 }));
 ---
 
@@ -91,11 +92,11 @@ const ordered = PILLARS.map((pillar, index) => ({
           <p class="venn__numeral-badge" aria-hidden="true">
             {pillar.numeral}
           </p>
-          <h3 class="venn__name">{pillar.copy.pillar}</h3>
-          <p class="venn__summary">{pillar.copy.summary}</p>
+          <h3 class="venn__name">{pillar.copy.name}</h3>
+          <p class="venn__summary">{pillar.copy.body}</p>
           <p class="venn__resource">
             <span class="venn__resource-label">{copy.linkedResource}</span>
-            <a href={`${localeHref(locale)}#resources`}>{pillar.copy.name}</a>
+            <a href={`${localeHref(locale)}#resources`}>{pillar.resource.name}</a>
           </p>
         </li>
       ))
@@ -146,6 +147,13 @@ const ordered = PILLARS.map((pillar, index) => ({
      * rather than as a fourth, invented colour stacked on top.
      */
     mix-blend-mode: multiply;
+    /*
+     * The accents themselves, not their pale tints. Each pillar has one colour
+     * across the whole site — Transparent communication is Keppel, Fair terms is
+     * Cyber Yellow, Appropriate solution is Coral — and the diagram has to show
+     * the same three, or it teaches the reader the wrong pairing.
+     */
+    opacity: 0.55;
     transform-box: fill-box;
     transform-origin: center;
     transition:
@@ -154,16 +162,15 @@ const ordered = PILLARS.map((pillar, index) => ({
   }
 
   .venn__circle--communication {
-    fill: var(--accent-communication-tint);
+    fill: var(--accent-communication);
   }
 
   .venn__circle--terms {
     fill: var(--accent-terms);
-    opacity: 0.5;
   }
 
   .venn__circle--solution {
-    fill: var(--accent-solution-tint);
+    fill: var(--accent-solution);
   }
 
   .venn__numeral {

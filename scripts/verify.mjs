@@ -86,6 +86,13 @@ const ratio = (a, b) => {
   return (hi + 0.05) / (lo + 0.05);
 };
 
+/** Mirrors CSS `color-mix(in srgb, a pct%, b)` so derived surfaces stay in step. */
+const mix = (a, b, pct) => {
+  const ch = (hex, i) => (parseInt(hex.slice(1), 16) >> (16 - i * 8)) & 255;
+  const out = [0, 1, 2].map((i) => Math.round((ch(a, i) * pct + ch(b, i) * (100 - pct)) / 100));
+  return `#${out.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+};
+
 const PALETTE = {
   coral: '#FF5A5A',
   palePink: '#FFDADA',
@@ -98,6 +105,9 @@ const PALETTE = {
   white: '#FFFFFF',
 };
 
+/* --footer-bg in tokens.css: a neutral beige-grey band, not a brand colour. */
+PALETTE.footer = mix(PALETTE.jet, PALETTE.floral, 7);
+
 /**
  * Every foreground/background pair the site renders where the contrast has to
  * hold. The rule this enforces: text on a brand colour is always Eerie Black,
@@ -108,7 +118,9 @@ const PAIRS = [
   { name: 'muted text on page', fg: PALETTE.jet, bg: PALETTE.floral, min: 4.5 },
   { name: 'body text on card', fg: PALETTE.eerie, bg: PALETTE.white, min: 4.5 },
   { name: 'muted text on card', fg: PALETTE.jet, bg: PALETTE.white, min: 4.5 },
-  { name: 'text on Pale Pink (footer, notice)', fg: PALETTE.eerie, bg: PALETTE.palePink, min: 4.5 },
+  { name: 'text on the footer band', fg: PALETTE.eerie, bg: PALETTE.footer, min: 4.5 },
+  { name: 'muted text on the footer band', fg: PALETTE.jet, bg: PALETTE.footer, min: 4.5 },
+  { name: 'text on Pale Pink (card head)', fg: PALETTE.eerie, bg: PALETTE.palePink, min: 4.5 },
   { name: 'muted text on Pale Pink', fg: PALETTE.jet, bg: PALETTE.palePink, min: 4.5 },
   { name: 'text on Opal (card head)', fg: PALETTE.eerie, bg: PALETTE.opal, min: 4.5 },
   { name: 'muted text on Opal', fg: PALETTE.jet, bg: PALETTE.opal, min: 4.5 },
@@ -120,6 +132,7 @@ const PAIRS = [
   { name: 'number ring border on card head', fg: PALETTE.eerie, bg: PALETTE.white, min: 3 },
   { name: 'focus ring on page', fg: PALETTE.eerie, bg: PALETTE.floral, min: 3 },
   { name: 'focus ring on Pale Pink', fg: PALETTE.eerie, bg: PALETTE.palePink, min: 3 },
+  { name: 'focus ring on the footer band', fg: PALETTE.eerie, bg: PALETTE.footer, min: 3 },
   { name: 'focus ring on Opal', fg: PALETTE.eerie, bg: PALETTE.opal, min: 3 },
 ];
 

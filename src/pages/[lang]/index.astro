@@ -83,6 +83,7 @@ const t = useTranslations(locale);
         {
           PILLARS.map((pillar, index) => {
             const copy = t.deliverables[pillar.deliverable];
+            const pillarCopy = t.pillars[pillar.id];
             return (
               <li
                 class="pillars__item"
@@ -90,7 +91,7 @@ const t = useTranslations(locale);
                 style={`--pillar-accent: ${pillar.accent}; --pillar-tint: ${pillar.accentTint}; --reveal-delay: ${index * 90}ms;`}
               >
                 <span class="pillars__rule" aria-hidden="true" />
-                <h3 class="pillars__name">{copy.pillar}</h3>
+                <h3 class="pillars__name">{pillarCopy.name}</h3>
                 <p class="pillars__resource">{copy.name}</p>
               </li>
             );
@@ -106,25 +107,6 @@ const t = useTranslations(locale);
     </div>
   </section>
 
-  <!-- ===== Important notice ============================================== -->
-  <section class="section--tight notice" aria-labelledby="notice-heading">
-    <div class="container container--narrow notice__inner" data-reveal>
-      <p class="eyebrow notice__eyebrow">{t.home.notice.eyebrow}</p>
-      <h2 id="notice-heading" class="notice__heading">{t.home.notice.heading}</h2>
-      <p class="notice__lead">{t.home.notice.lead}</p>
-      <ul class="notice__list">
-        {
-          t.home.notice.items.map((item) => (
-            <li>
-              <span class="notice__marker" aria-hidden="true" />
-              <span>{item}</span>
-            </li>
-          ))
-        }
-      </ul>
-      <p class="notice__footnote">{t.home.notice.footnote}</p>
-    </div>
-  </section>
 </BaseLayout>
 
 <style>
@@ -369,62 +351,4 @@ const t = useTranslations(locale);
     margin-block-start: var(--space-xl);
   }
 
-  /* ---- Notice -------------------------------------------------------------- */
-
-  .notice {
-    padding-block-end: var(--space-2xl);
-  }
-
-  .notice__inner {
-    padding: var(--space-l);
-    background: var(--c-pale-pink);
-    border-radius: var(--radius-l);
-    /* An accent edge marks it as a warning without relying on colour alone. */
-    border-inline-start: 6px solid var(--c-coral);
-  }
-
-  .notice__eyebrow {
-    color: var(--ink);
-  }
-
-  .notice__heading {
-    margin-block: var(--space-3xs) var(--space-xs);
-    font-size: var(--step-2);
-  }
-
-  .notice__lead {
-    max-width: var(--measure);
-  }
-
-  .notice__list {
-    display: grid;
-    gap: var(--space-2xs);
-    margin-block: var(--space-s);
-  }
-
-  .notice__list li {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-2xs);
-    align-items: start;
-    max-width: var(--measure);
-  }
-
-  .notice__marker {
-    width: 0.5rem;
-    height: 0.5rem;
-    margin-block-start: 0.55em;
-    background: var(--c-coral);
-    border: 1px solid var(--c-eerie);
-    border-radius: 50%;
-    flex: none;
-  }
-
-  .notice__footnote {
-    padding-block-start: var(--space-s);
-    border-top: 1px solid color-mix(in srgb, var(--c-eerie) 18%, transparent);
-    font-size: var(--step--1);
-    color: var(--ink-muted);
-    max-width: var(--measure);
-  }
 </style>

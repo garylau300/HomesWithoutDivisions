@@ -32,82 +32,81 @@
     },
     "deliverables": {
       "eyebrow": "Three resources",
-      "heading": "Three documents, for the three moments that decide a tenancy",
-      "lead": "Each one answers a different part of what makes a tenancy equitable. All free to download, reproduce and share.",
+      "heading": "Three pillars, and the resource for each",
+      "lead": "We design this project around an equitable tenancy philosophy in mind: transparent communication, fair terms and conduct, and appropriate solution, with the corresponding resources for you. All free to download, reproduce and share.",
       "downloadHeading": "Download"
     },
     "pillars": {
-      "eyebrow": "Our thinking",
-      "heading": "What makes a tenancy equitable?",
-      "lead": "We break it into three concrete things. The three resources exist so that each of them is actually achievable.",
+      "eyebrow": "Our philosophy",
+      "heading": "An equitable tenancy philosophy",
+      "lead": "Transparent communication, fair terms and conduct, and appropriate solution. Behind each pillar is a resource that helps you get there.",
       "cta": "Read more about our approach"
-    },
-    "notice": {
-      "eyebrow": "Important notice",
-      "heading": "This is legal information, not legal advice",
-      "lead": "This site and its resources give general legal information. They cannot take account of the facts of your own tenancy. If any of the following is happening, stop and speak to a social worker, a lawyer or the police straight away:",
-      "items": [
-        "You have been given a notice to quit, a demand for possession, or any court document.",
-        "The locks have been changed, your belongings have been removed, or you are being kept out of your home.",
-        "Water or electricity has been cut off, or a shared facility blocked, to make you leave.",
-        "You are being threatened, intimidated or harassed.",
-        "There is a fire safety, structural or electrical danger in the unit or the building.",
-        "You repeatedly cannot pay rent, or you have nowhere to go if the tenancy ends."
-      ],
-      "footnote": "Harassment of a tenant with intent to make the tenant give up the unit is a criminal offence under section 120AAZO of the Landlord and Tenant (Consolidation) Ordinance (Cap. 7)."
     }
   },
   "about": {
     "title": "About us | Homes Without Divisions",
     "hero": {
       "eyebrow": "About us",
-      "heading": "Turning protection on paper into the capacity to act",
+      "heading": "Overcoming divisions between the law and tenancy realities",
       "lead": "Homes Without Divisions is a community legal empowerment initiative by Pro Bono HK for tenants living in subdivided units. Our mission is to advance the next generation of equitable tenancy in Hong Kong."
     },
     "mission": {
       "eyebrow": "Our mission",
-      "heading": "Adequate housing is a right, not a matter of luck",
+      "heading": "The universal right to adequate housing",
       "body": [
-        "Article 39 of the Basic Law keeps the International Covenant on Economic, Social and Cultural Rights in force in Hong Kong. Article 11(1) of the Covenant recognises the universal right to adequate housing. Under the Special Rapporteur's guidelines, that right covers security of tenure, availability of services, affordability, habitability, accessibility, appropriate location and cultural adequacy.",
-        "Living in a subdivided unit should not mean giving any of that up. With the Basic Housing Units reform now changing both tenancy control and housing standards, it matters more than ever that tenants know where they stand."
+        "Article 39 of the Basic Law provides that the International Covenant on Economic, Social and Cultural Rights is fully in force in Hong Kong. Article 11(1) of the ICESCR provides the universal right to adequate housing. According to the Guidelines for the Implementation on the Right to Adequate Housing by the Special Rapporteur, this includes security of tenure, availability of services, affordability, habitability, accessibility, appropriate location and cultural adequacy.",
+        "Our mission is to advance the next generation of equitable tenancy in Hong Kong, by adopting and facilitating both international legal standards and domestic regulations, especially in view of the recent Basic Housing Units reform in the city."
       ],
-      "methodsHeading": "We work in two ways",
+      "methodsHeading": "We do this in two ways",
       "methods": [
         {
           "name": "Standard-setting",
-          "body": "Publishing a model tenancy agreement and supporting documents that any tenant and landlord can adopt, so both sides start from the same terms and the same understanding."
+          "body": "First, we set a common standard, by publishing a model tenancy agreement and supporting documents that any tenant and landlord can adopt."
         },
         {
           "name": "Capacity-building",
-          "body": "Explaining what the law already gives you and how to use it in practice — not only knowing, but being able to act."
+          "body": "Second, we build capacity, by explaining what the law already gives you and how to use it."
         }
       ]
     },
     "pillars": {
       "eyebrow": "Three pillars",
-      "heading": "The three parts of an equitable tenancy",
-      "lead": "They hold each other up. Take any one away and the other two get weaker. Choose one below to see what it means.",
+      "heading": "The three pillars of an equitable tenancy",
+      "lead": "We design this project around an equitable tenancy philosophy in mind: transparent communication, fair terms and conduct, and appropriate solution, with the corresponding resources for you.",
       "diagramTitle": "Human-oriented equitable tenancy",
       "diagramDescription": "Three overlapping circles representing transparent communication, fair terms and conduct, and appropriate solution. Where all three overlap is a human-oriented equitable tenancy. Two dotted circles around the outside mark our two ways of working: standard-setting and capacity-building.",
       "linkedResource": "The resource for this"
     },
     "capability": {
       "eyebrow": "Our approach",
-      "heading": "From having a right to being able to use it",
+      "heading": "A humanist perspective on law",
       "body": [
-        "The Without Divisions ethos is grounded in a humanist view of law, inspired by the capability approach to human welfare developed by Amartya Sen and others. We notice how, despite formal legal protections, it is often difficult to translate them across the fabric of society into meaningful empowerment.",
-        "The capability approach emphasises the freedom to achieve through human agency. It reminds us that what is right or good does not simply arrive with a list of rights, nor because that is how things have always worked. It is about how we, with help from the community, build the opportunity and the capacity to live a better life.",
-        "For tenants in subdivided units, that means more than having statutory protections on paper. It means being able to understand your tenancy, communicate on fair terms, seek solutions without fear, and exercise real agency in the everyday decisions a tenancy demands.",
-        "Whoever you are reading this — a tenant, a frontline NGO worker, someone about to move into a subdivided unit, or simply a curious member of the public — we hope these resources point you in the right direction the next time you have a choice to make."
+        "The Without Divisions ethos is grounded in a humanist perspective on law. It is inspired by the capability approach to human welfare and development theorised by Amartya Sen and other scholars. We notice how, despite formal legal protections, it is often difficult to translate them across the fabric of society into meaningful empowerment.",
+        "The capability approach emphasises the role of “freedom to achieve” by our human agency, which is directly relevant in the contexts of access to justice and the rule of law. It reminds us that what is right or good does not just come with a list of rights, or because it has always been how it works. It is more about how we, with help from the community, strive for opportunities and capacity for improvement to live a better life.",
+        "For tenants in subdivided units, this means not only having statutory protections on paper or top of their mind, but also being able to understand their tenancies, communicate with fair terms and conduct, seek solutions without worries, and exercise agency in daily decision-making of navigating tenancy relationships.",
+        "We hope that whoever you are reading this — whether a subdivided units tenant, a frontline NGO worker, a person who is going to live in a subdivided unit, or a member of the general public who is curious — these resources would meaningfully help you in pointing the right direction when you have to make the choice next time."
       ],
       "resourcesCta": "See the three resources"
+    }
+  },
+  "pillars": {
+    "communication": {
+      "name": "Transparent communication",
+      "body": "You talk about and discuss the tenancy openly, clearly, and in good time. Transparency reduces uncertainty and prevents misunderstandings."
+    },
+    "terms": {
+      "name": "Fair terms and conduct",
+      "body": "Your tenancy agreement is reasonable and does not contain illegal terms, and it reflects good faith and respect from both sides."
+    },
+    "solution": {
+      "name": "Appropriate solution",
+      "body": "You know what to do, and you know how the law can help when issues come up or before things go wrong."
     }
   },
   "deliverables": {
     "schedule-of-condition": {
       "name": "Schedule of Condition",
       "nameSecondary": "物業狀況紀錄表",
-      "pillar": "Transparent communication",
       "when": "Before you move in",
       "summary": "Record the real condition of the unit, the shared facilities and the key tenancy facts, item by item, so both sides start from the same set of facts.",
       "points": [
@@ -119,7 +118,6 @@
     "model-tenancy-agreement": {
       "name": "Model Tenancy Agreement",
       "nameSecondary": "分間單位租約範本",
-      "pillar": "Fair terms and conduct",
       "when": "When you sign",
       "summary": "A lawyer-checked, party-neutral tenancy agreement in plain language that reflects what the law actually requires, and adds nothing extra to either side's burden.",
       "points": [
@@ -131,7 +129,6 @@
     "pocket-tenancy-clinic": {
       "name": "Pocket Tenancy Clinic",
       "nameSecondary": "分間單位租務解難手冊",
-      "pillar": "Appropriate solution",
       "when": "When something goes wrong",
       "summary": "A clinic you can carry. Work through the diagnostics form to see where you stand, then go to the Treatment Room your answers point to — each with concrete steps to take.",
       "points": [

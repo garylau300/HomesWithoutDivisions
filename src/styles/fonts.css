@@ -1,0 +1,61 @@
+/*
+ * Quire Sans — the site's typeface, self-hosted.
+ *
+ * Licensed from Monotype by the project. Six static weights are supplied rather
+ * than one variable font, so each is declared separately below. Browsers fetch
+ * only the faces the page actually renders: today that is Regular and Bold, so
+ * Light, Black and the italics cost nothing until something uses them.
+ *
+ * Bold is declared over the range 600–700 so that the semibold UI text (buttons,
+ * nav, labels) resolves to the real Bold file rather than a synthesised weight.
+ *
+ * Chinese is not covered by Quire Sans and continues to be set in Noto Sans TC.
+ */
+
+@font-face {
+  font-family: 'Quire Sans';
+  src: url('/fonts/QuireSans-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Quire Sans';
+  src: url('/fonts/QuireSans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Quire Sans';
+  src: url('/fonts/QuireSans-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Quire Sans';
+  src: url('/fonts/QuireSans-Bold.woff2') format('woff2');
+  font-weight: 600 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Quire Sans';
+  src: url('/fonts/QuireSans-BoldItalic.woff2') format('woff2');
+  font-weight: 600 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Quire Sans';
+  src: url('/fonts/QuireSans-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}

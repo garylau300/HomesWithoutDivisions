@@ -75,7 +75,7 @@ local setup needed.
 ## Design
 
 Follows the **HWD Style Guide v.1** for colour, layout and logo use.
-The typefaces are a later project decision — see Typefaces below.
+The typeface is a later project decision — see Typefaces below.
 
 | | |
 |---|---|
@@ -100,28 +100,37 @@ Chinese is set above and larger than English throughout, as the guide requires.
 
 ### Typefaces
 
-| Role | Typeface |
-|---|---|
-| Headings | **Zilla Slab** |
-| Body and UI | **Quire Sans**, falling back to Source Sans 3 |
-| Chinese, throughout | **Noto Sans TC** (思源) |
+**Quire Sans** throughout, self-hosted from `public/fonts/`, licensed from Monotype
+by the project. Six weights are supplied as separate static files rather than one
+variable font — Light, Regular, Bold, Black and the two italics — declared in
+`src/styles/fonts.css`. Browsers fetch only the faces a page renders, so today
+that is Regular and Bold (about 82 KB); the rest cost nothing until used.
 
-Zilla Slab is open (SIL OFL) and loads from Google Fonts, so headings need
-nothing added.
+Bold is declared over the range `600 700`, so the semibold UI text resolves to the
+real Bold file instead of a synthesised weight.
 
-**Quire Sans is a commercial Monotype typeface** and its files are not in this
-repository, so `--font-sans` currently falls back to **Source Sans 3** — an open
-humanist sans of the same genre, and what readers actually see today. To enable
-Quire Sans, add the licensed `.woff2` files to `public/fonts/` and add
-`@import './quire-sans.css';` to `src/styles/base.css`; nothing else changes.
+**Noto Sans TC** (思源) carries Chinese, loaded from Google Fonts. Quire Sans has
+no CJK coverage, so every Chinese glyph falls to it — as the style guide requires.
 
-Neither Zilla Slab nor Quire Sans covers Chinese, so every Chinese glyph is set
-in Noto Sans TC, as the style guide requires. That means English headings are
-slab-serif while Chinese headings stay sans — deliberate, and switchable to
-Noto Serif TC (思源宋體) if the slab feel should carry across both languages.
+To re-generate the WOFF2 files from new TTFs, convert with `fonttools`
+(`font.flavor = 'woff2'`) and keep the same filenames.
 
-This replaces the IBM Plex Sans and Tabarra pairing named in Style Guide v.1, at
-the project's request; the palette and layout rules below are unchanged.
+Chinese is set above and larger than English throughout, as the guide requires.
+
+### Pillar colours
+
+Each pillar has one colour across the whole site — cards, the pillars strip and
+the diagram all read from the same tokens in `tokens.css`, so changing a pillar's
+colour is a one-line edit that propagates everywhere:
+
+| Pillar | Resource | Accent | Tint |
+|---|---|---|---|
+| Transparent communication | Schedule of Condition | Keppel | Opal |
+| Fair terms and conduct | Model Tenancy Agreement | Cyber Yellow | Floral White |
+| Appropriate solution | Pocket Tenancy Clinic | Orange Red Crayola | Pale Pink |
+
+Each card also carries a numeral matching the diagram, so the pairing never
+depends on colour alone.
 
 ### The logo
 

@@ -28,6 +28,8 @@
   --ink: var(--c-eerie);
   --ink-muted: var(--c-jet);
   --rule: color-mix(in srgb, var(--c-jet) 16%, transparent);
+  /* A warm neutral band for the footer — beige-grey, not a brand colour. */
+  --footer-bg: color-mix(in srgb, var(--c-jet) 7%, var(--c-floral));
   --rule-strong: color-mix(in srgb, var(--c-jet) 30%, transparent);
 
   /*
@@ -38,34 +40,26 @@
    *   Yellow ↔ Floral White
    *   Eerie Black ↔ Floral White
    */
-  --accent-communication: var(--c-coral);
-  --accent-communication-tint: var(--c-pale-pink);
+  --accent-communication: var(--c-keppel);
+  --accent-communication-tint: var(--c-opal);
   --accent-terms: var(--c-yellow);
   --accent-terms-tint: var(--c-floral);
-  --accent-solution: var(--c-keppel);
-  --accent-solution-tint: var(--c-opal);
+  --accent-solution: var(--c-coral);
+  --accent-solution-tint: var(--c-pale-pink);
 
   /* ---- Type -------------------------------------------------------------- */
   /*
-   * Quire Sans is the primary face. It is a commercial Monotype typeface whose
-   * files cannot be redistributed here, so until licensed copies are added (see
-   * src/styles/quire-sans.css) this resolves to a reader's local copy if they
-   * have one, and otherwise to Source Sans 3 — an open humanist sans of the same
-   * genre, chosen because it is what nearly everyone will actually see.
+   * Quire Sans throughout, self-hosted from public/fonts (see fonts.css).
+   * Headings and body share the face; hierarchy comes from size and weight.
    *
-   * Noto Sans TC (思源) carries Chinese throughout: neither Quire Sans nor
-   * Zilla Slab has CJK coverage, so it picks up every Chinese glyph.
+   * Noto Sans TC (思源) carries Chinese: Quire Sans has no CJK coverage, so it
+   * picks up every Chinese glyph.
    */
-  --font-sans: 'Quire Sans', 'Source Sans 3', 'Noto Sans TC', -apple-system,
-    BlinkMacSystemFont, 'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif;
+  --font-sans: 'Quire Sans', 'Noto Sans TC', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif;
 
-  /*
-   * Zilla Slab sets the headings. It is open (SIL OFL) and loaded properly, so
-   * this one needs nothing added. It covers Latin only — Chinese headings fall
-   * through to Noto Sans TC.
-   */
-  --font-display: 'Zilla Slab', 'Quire Sans', 'Source Sans 3', 'Noto Sans TC',
-    Georgia, serif;
+  /* Kept as a separate token so headings can diverge again without a sweep. */
+  --font-display: var(--font-sans);
 
   /* Fluid scale, 320px → 1280px viewport */
   --step--1: clamp(0.8125rem, 0.78rem + 0.16vw, 0.875rem);

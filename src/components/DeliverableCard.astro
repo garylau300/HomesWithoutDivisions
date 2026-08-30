@@ -21,6 +21,7 @@ const { deliverable, locale, delay = 0 } = Astro.props;
 const t = useTranslations(locale);
 const copy = t.deliverables[deliverable.id];
 const pillar = pillarFor(deliverable.id);
+const pillarCopy = t.pillars[pillar.id];
 const number = String(deliverable.index).padStart(2, '0');
 ---
 
@@ -35,7 +36,7 @@ const number = String(deliverable.index).padStart(2, '0');
       <path class="card__arch-shape" d="M4 66 A56 56 0 0 1 116 66 L92 66 A32 32 0 0 0 28 66 Z"></path>
     </svg>
     <p class="card__number" aria-hidden="true">{number}</p>
-    <p class="card__pillar">{copy.pillar}</p>
+    <p class="card__pillar">{pillarCopy.name}</p>
     <p class="card__when">{copy.when}</p>
   </div>
 

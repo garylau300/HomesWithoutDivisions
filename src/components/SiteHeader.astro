@@ -111,7 +111,13 @@ const links = [
     height: 2.5rem;
   }
 
-  .site-header__mark {
+  /*
+   * :global() is required, not incidental. The mark is rendered by HouseIcon, so
+   * it carries that component's scope attribute rather than this one's — a plain
+   * `.site-header__mark` rule here never matches it, which is how the lockup and
+   * the mark ended up showing side by side on wide screens.
+   */
+  :global(.site-header__mark) {
     display: none;
   }
 
@@ -159,7 +165,7 @@ const links = [
       display: none;
     }
 
-    .site-header__mark {
+    :global(.site-header__mark) {
       display: block;
     }
 
