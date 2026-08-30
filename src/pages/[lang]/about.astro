@@ -27,6 +27,25 @@ const about = t.about;
     </div>
   </section>
 
+  <!-- ===== The capability approach — leads the page ====================== -->
+  <section class="section capability" aria-labelledby="capability-heading">
+    <div class="container container--narrow">
+      <header class="section-head" data-reveal>
+        <p class="eyebrow">{about.capability.eyebrow}</p>
+        <h2 id="capability-heading">{about.capability.heading}</h2>
+      </header>
+
+      <div class="prose capability__body" data-reveal>
+        {about.capability.body.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+
+      <p class="capability__cta" data-reveal>
+        <a class="button" href={`${localeHref(locale)}#resources`}>
+          {about.capability.resourcesCta}
+        </a>
+      </p>
+    </div>
+  </section>
   <!-- ===== Mission ======================================================= -->
   <section class="section mission" aria-labelledby="mission-heading">
     <div class="container container--narrow">
@@ -71,25 +90,6 @@ const about = t.about;
     </div>
   </section>
 
-  <!-- ===== The capability approach ======================================= -->
-  <section class="section capability" aria-labelledby="capability-heading">
-    <div class="container container--narrow">
-      <header class="section-head" data-reveal>
-        <p class="eyebrow">{about.capability.eyebrow}</p>
-        <h2 id="capability-heading">{about.capability.heading}</h2>
-      </header>
-
-      <div class="prose capability__body" data-reveal>
-        {about.capability.body.map((paragraph) => <p>{paragraph}</p>)}
-      </div>
-
-      <p class="capability__cta" data-reveal>
-        <a class="button" href={`${localeHref(locale)}#resources`}>
-          {about.capability.resourcesCta}
-        </a>
-      </p>
-    </div>
-  </section>
 </BaseLayout>
 
 <style>

@@ -77,8 +77,9 @@ const logoAlt = `${t.site.name} ${t.site.nameSecondary}`;
 
   @media (min-width: 48rem) {
     .site-footer__inner {
-      grid-template-columns: minmax(0, 1.2fr) auto minmax(0, 1.4fr);
-      gap: var(--space-l);
+      grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1.25fr);
+      column-gap: var(--space-2xl);
+      row-gap: var(--space-l);
     }
   }
 
@@ -133,7 +134,8 @@ const logoAlt = `${t.site.name} ${t.site.nameSecondary}`;
 
   .site-footer__partner {
     width: auto;
-    height: 3.25rem;
+    object-fit: contain;
+    height: 4rem;
     margin-block-end: var(--space-3xs);
   }
 

@@ -106,4 +106,10 @@ const t = useTranslations(locale);
   .lang-toggle__option:not([aria-current]):hover {
     color: var(--c-coral);
   }
+
+  @media (max-width: 24rem) {
+    .lang-toggle__option {
+      padding-inline: var(--space-2xs);
+    }
+  }
 </style>

@@ -135,7 +135,8 @@ const links = [
     align-items: center;
     justify-content: space-between;
     gap: var(--space-s);
-    padding-block: var(--space-xs);
+    /* A little air above the mark before the page begins. */
+    padding-block: var(--space-s) var(--space-xs);
     transition: padding-block var(--dur) var(--ease-out);
   }
 
@@ -151,10 +152,17 @@ const links = [
   }
 
   .site-header.is-condensed .site-header__inner {
-    padding-block: var(--space-2xs);
+    padding-block: var(--space-xs) var(--space-2xs);
   }
 
   .site-header__title {
+    /*
+     * flex: none is load-bearing. As a flex item the lockup was being compressed
+     * horizontally while its height stayed fixed by the calc below, squashing the
+     * wordmark by up to 35% between 545px and 700px wide. Its aspect ratio is now
+     * never the thing that gives.
+     */
+    flex: none;
     margin: 0;
     font-size: inherit;
     line-height: 0;
@@ -162,6 +170,7 @@ const links = [
 
   .site-header__logo {
     display: flex;
+    flex: none;
     align-items: center;
     border-radius: var(--radius-s);
   }
@@ -177,11 +186,14 @@ const links = [
 
   .site-header--prominent {
     --logo-min: 2.25rem;
-    --logo-max: 4.25rem;
+    /* Fluid, so the bar still fits its nav on a narrow tablet. */
+    --logo-max: clamp(2.75rem, 1.9rem + 2.4vw, 3.75rem);
   }
 
   .site-header__lockup {
     width: auto;
+    /* Belt and braces: never let the wordmark stretch, whatever squeezes it. */
+    object-fit: contain;
     height: calc(
       var(--logo-max) - (var(--logo-max) - var(--logo-min)) * var(--scroll-progress, 0)
     );
@@ -223,6 +235,7 @@ const links = [
     border-radius: var(--radius-pill);
     font-size: var(--step--1);
     font-weight: 600;
+    white-space: nowrap;
     text-decoration: none;
     transition:
       background-color var(--dur-fast) var(--ease-out),
@@ -242,7 +255,7 @@ const links = [
     text-decoration-thickness: 2px;
   }
 
-  @media (max-width: 34rem) {
+  @media (max-width: 44rem) {
     .site-header__lockup {
       display: none;
     }
@@ -253,6 +266,31 @@ const links = [
 
     .site-header__nav {
       gap: var(--space-2xs);
+    }
+  }
+
+  /* On the narrowest phones the bar's contents have to give up their padding. */
+  @media (max-width: 24rem) {
+    .site-header__inner,
+    .site-header__nav {
+      gap: var(--space-3xs);
+    }
+
+    .site-header__links {
+      gap: 0;
+    }
+
+    .site-header__link {
+      padding-inline: var(--space-2xs);
+    }
+
+    /*
+     * The mark to its left is already the Home link, so on the narrowest phones
+     * the separate Home item is redundant — and dropping it is what lets
+     * "About us" stay on one line.
+     */
+    .site-header__links li:first-child {
+      display: none;
     }
   }
 </style>
