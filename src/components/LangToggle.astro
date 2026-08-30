@@ -1,0 +1,109 @@
+---
+import { localeHref, useTranslations, LOCALES, type Locale } from '../lib/i18n';
+
+/**
+ * Language switch.
+ *
+ * Two anchors to the mirrored URL, not a script that swaps text. It therefore
+ * works without JavaScript, is announced correctly (each option carries its own
+ * lang, so a screen reader pronounces 中文 in Chinese), and gives each language
+ * a real, shareable address.
+ *
+ * The choice is remembered only so that a bare "/" can send a returning reader
+ * to the language they picked last time.
+ */
+interface Props {
+  locale: Locale;
+  page: string;
+}
+
+const { locale, page } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<nav class="lang-toggle" aria-label={t.nav.languageLabel}>
+  {
+    LOCALES.map((l) => {
+      const dict = useTranslations(l);
+      const current = l === locale;
+      return (
+        <a
+          class="lang-toggle__option"
+          href={localeHref(l, page)}
+          lang={dict.meta.htmlLang}
+          hreflang={dict.meta.htmlLang}
+          aria-current={current ? 'true' : undefined}
+          data-lang={l}
+        >
+          {dict.meta.label}
+          {current && <span class="visually-hidden">&nbsp;({t.nav.languageLabel})</span>}
+        </a>
+      );
+    })
+  }
+</nav>
+
+<script>
+  // Remember the reader's choice so the root URL can honour it next visit.
+  document.querySelectorAll<HTMLAnchorElement>('.lang-toggle__option').forEach((link) => {
+    link.addEventListener('click', () => {
+      try {
+        localStorage.setItem('hwd-lang', link.dataset.lang ?? '');
+      } catch {
+        // Private mode or blocked storage: the site works the same without it.
+      }
+    });
+  });
+</script>
+
+<style>
+  .lang-toggle {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    padding: 3px;
+    background: color-mix(in srgb, var(--c-jet) 8%, transparent);
+    border-radius: var(--radius-pill);
+    isolation: isolate;
+  }
+
+  /* The indicator sits behind the labels and slides to the active option. */
+  .lang-toggle::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset-block: 3px;
+    inset-inline-start: 3px;
+    width: calc(50% - 3px);
+    background: var(--c-eerie);
+    border-radius: var(--radius-pill);
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .lang-toggle:has(.lang-toggle__option:last-child[aria-current])::before {
+    transform: translateX(100%);
+  }
+
+  .lang-toggle__option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.375rem;
+    padding-inline: var(--space-xs);
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: var(--radius-pill);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .lang-toggle__option[aria-current] {
+    color: var(--c-floral);
+  }
+
+  .lang-toggle__option:not([aria-current]):hover {
+    color: var(--c-coral);
+  }
+</style>

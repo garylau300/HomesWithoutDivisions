@@ -1,0 +1,240 @@
+---
+import { useTranslations, type Locale } from '../lib/i18n';
+import { pillarFor, type Deliverable } from '../data/deliverables';
+import DownloadPicker from './DownloadPicker.astro';
+
+/**
+ * One of the three resources.
+ *
+ * The arch motif is taken from the Pocket Clinic's own diagrams, which use a
+ * coral / yellow / teal arch for each of its three sections. Each card carries
+ * its pillar's colour so the three stay recognisable across the site.
+ */
+interface Props {
+  deliverable: Deliverable;
+  locale: Locale;
+  /** Stagger for the scroll reveal, in milliseconds. */
+  delay?: number;
+}
+
+const { deliverable, locale, delay = 0 } = Astro.props;
+const t = useTranslations(locale);
+const copy = t.deliverables[deliverable.id];
+const pillar = pillarFor(deliverable.id);
+const number = String(deliverable.index).padStart(2, '0');
+---
+
+<article
+  class="card"
+  data-reveal
+  style={`--card-accent: ${pillar.accent}; --card-tint: ${pillar.accentTint}; --reveal-delay: ${delay}ms;`}
+>
+  <div class="card__head">
+    <svg class="card__arch" viewBox="0 0 120 66" aria-hidden="true">
+      {/* A half-annulus: the arch used throughout the printed Pocket Clinic. */}
+      <path class="card__arch-shape" d="M4 66 A56 56 0 0 1 116 66 L92 66 A32 32 0 0 0 28 66 Z"></path>
+    </svg>
+    <p class="card__number" aria-hidden="true">{number}</p>
+    <p class="card__pillar">{copy.pillar}</p>
+    <p class="card__when">{copy.when}</p>
+  </div>
+
+  <div class="card__body">
+    {/* Chinese sits above and larger than English, per the style guide. */}
+    <h3 class="card__title">
+      <span class="card__title-primary">{copy.name}</span>
+      <span
+        class="card__title-secondary"
+        lang={locale === 'zh' ? 'en-GB' : 'zh-Hant-HK'}>{copy.nameSecondary}</span
+      >
+    </h3>
+
+    <p class="card__summary">{copy.summary}</p>
+
+    <ul class="card__points">
+      {
+        copy.points.map((point) => (
+          <li>
+            <svg viewBox="0 0 16 16" aria-hidden="true" class="card__tick">
+              <path
+                d="m3.5 8.5 3 3 6-7"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>{point}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="card__download">
+    <h4 class="card__download-heading">{t.home.deliverables.downloadHeading}</h4>
+    <DownloadPicker deliverable={deliverable} locale={locale} />
+  </div>
+</article>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    transition:
+      transform var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out),
+      border-color var(--dur) var(--ease-out);
+  }
+
+  .card:hover,
+  .card:focus-within {
+    transform: translateY(-4px);
+    border-color: var(--card-accent);
+    box-shadow: var(--shadow-l);
+  }
+
+  /* ---- Head ---------------------------------------------------------------- */
+
+  .card__head {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    padding: var(--space-l) var(--space-m) var(--space-s);
+    background: var(--card-tint);
+    text-align: center;
+  }
+
+  .card__arch-shape {
+    fill: var(--card-accent);
+  }
+
+  .card__arch {
+    width: 7.5rem;
+    height: auto;
+    transform-origin: bottom center;
+    transition: transform var(--dur-slow) var(--ease-spring);
+  }
+
+  .card:hover .card__arch,
+  .card:focus-within .card__arch {
+    transform: scaleY(1.12);
+  }
+
+  .card__number {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-block-start: -1.125rem;
+    background: var(--surface);
+    border: 2px solid var(--card-accent);
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--step--1);
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .card__pillar {
+    margin-block-start: var(--space-xs);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 700;
+    line-height: var(--leading-tight);
+    color: var(--ink);
+  }
+
+  .card__when {
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+  }
+
+  /* ---- Body ---------------------------------------------------------------- */
+
+  .card__body {
+    display: grid;
+    gap: var(--space-xs);
+    padding: var(--space-m) var(--space-m) var(--space-s);
+  }
+
+  .card__title {
+    display: grid;
+    gap: 0.15em;
+  }
+
+  .card__title-primary {
+    font-size: var(--step-2);
+    line-height: var(--leading-tight);
+  }
+
+  .card__title-secondary {
+    font-family: var(--font-sans);
+    font-size: var(--step-0);
+    font-weight: 600;
+    color: var(--ink-muted);
+    letter-spacing: 0;
+  }
+
+  .card__summary {
+    color: var(--ink);
+  }
+
+  .card__points {
+    display: grid;
+    gap: var(--space-2xs);
+    font-size: var(--step--1);
+    line-height: var(--leading-snug);
+    color: var(--ink-muted);
+  }
+
+  .card__points li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2xs);
+    align-items: start;
+  }
+
+  .card__tick {
+    width: 1rem;
+    height: 1rem;
+    margin-block-start: 0.15em;
+    /*
+     * Not the accent: Cyber Yellow is about 1.5:1 against white and Keppel 2.4:1,
+     * both under the 3:1 a meaningful graphic needs. The card's colour identity
+     * is carried by the arch and the tinted header instead.
+     */
+    color: var(--ink);
+    flex: none;
+  }
+
+  /* ---- Download ------------------------------------------------------------ */
+
+  .card__download {
+    margin-block-start: auto;
+    padding: var(--space-m);
+    border-top: 1px solid var(--rule);
+    background: color-mix(in srgb, var(--card-tint) 30%, var(--surface));
+  }
+
+  .card__download-heading {
+    margin-block-end: var(--space-xs);
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  :global(:lang(zh)) .card__download-heading {
+    text-transform: none;
+    letter-spacing: 0.12em;
+  }
+</style>

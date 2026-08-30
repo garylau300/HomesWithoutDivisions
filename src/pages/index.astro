@@ -1,0 +1,126 @@
+---
+/**
+ * Root URL — sends the reader to a language.
+ *
+ * A stored choice wins, then the browser's own language preferences, then
+ * Chinese as the default. Without JavaScript this is a plain chooser rather
+ * than a dead end, so nobody is stranded here.
+ */
+import { useTranslations } from '../lib/i18n';
+import '../styles/tokens.css';
+import '../styles/base.css';
+
+const zh = useTranslations('zh');
+const en = useTranslations('en');
+const canonical = new URL('/zh', Astro.site);
+---
+
+<!doctype html>
+<html lang="zh-Hant-HK">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{`${zh.site.name} · ${en.site.name}`}</title>
+    <meta name="description" content={zh.site.description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="zh-Hant-HK" href={new URL('/zh', Astro.site)} />
+    <link rel="alternate" hreflang="en-GB" href={new URL('/en', Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL('/zh', Astro.site)} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#FFFBF5" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=Noto+Sans+TC:wght@400;700&display=swap"
+    />
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('hwd-lang');
+          if (stored === 'zh' || stored === 'en') {
+            location.replace('/' + stored);
+            return;
+          }
+        } catch (error) {
+          /* storage blocked; fall through to the browser's preference */
+        }
+        var preferences = navigator.languages || [navigator.language || 'zh'];
+        for (var i = 0; i < preferences.length; i += 1) {
+          var tag = (preferences[i] || '').toLowerCase();
+          if (tag.indexOf('zh') === 0) break;
+          if (tag.indexOf('en') === 0) {
+            location.replace('/en');
+            return;
+          }
+        }
+        location.replace('/zh');
+      })();
+    </script>
+  </head>
+
+  <body class="chooser">
+    <main class="chooser__inner">
+      <img
+        class="chooser__logo"
+        src="/brand/hwd-lockup-660.png"
+        alt={`${zh.site.name} ${en.site.name}`}
+        width="660"
+        height="128"
+      />
+      <p class="chooser__prompt">
+        <span lang="zh-Hant-HK">選擇語言</span>
+        <span lang="en-GB">Choose a language</span>
+      </p>
+      <ul class="chooser__options">
+        <li>
+          <a class="button chooser__option" href="/zh" lang="zh-Hant-HK">中文</a>
+        </li>
+        <li>
+          <a class="button button--ghost chooser__option" href="/en" lang="en-GB">English</a>
+        </li>
+      </ul>
+    </main>
+  </body>
+</html>
+
+<style>
+  .chooser {
+    display: grid;
+    place-items: center;
+    min-height: 100svh;
+    padding: var(--gutter);
+  }
+
+  .chooser__inner {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-m);
+    text-align: center;
+  }
+
+  .chooser__logo {
+    width: min(20rem, 80vw);
+    height: auto;
+  }
+
+  .chooser__prompt {
+    display: grid;
+    gap: var(--space-3xs);
+    color: var(--ink-muted);
+  }
+
+  .chooser__options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-s);
+  }
+
+  .chooser__option {
+    min-width: 9rem;
+    font-size: var(--step-1);
+  }
+</style>

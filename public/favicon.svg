@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -38.5 576 576" role="img" aria-label="Homes Without Divisions">
+  <title>Homes Without Divisions</title>
+  <!--
+    The house-and-heart mark, rebuilt from the brand lockup as vector geometry.
+    The pale lines in the logo are knockouts, not white paint, so they are cut with
+    a mask and the mark stays correct on any background. The mark's own coordinate
+    space is 576 x 499; the viewBox is offset to centre it in a square.
+    Colour is Orange Red Crayola #FF5A5A. Do not recolour, rotate or add effects.
+  -->
+  <defs>
+    <mask id="hwd-cut" maskUnits="userSpaceOnUse" x="0" y="-38.5" width="576" height="576">
+      <rect x="0" y="-38.5" width="576" height="576" fill="#fff"/>
+      <!-- the division: a vertical channel from the roof apex to the floor -->
+      <rect x="271.5" y="48" width="34" height="449" fill="#000"/>
+      <!-- the heart bridges the division, so its interior is restored to coral -->
+      <path id="hwd-heart" d="M289.5 424.5C258 398 174.5 344 174.5 299C174.5 261 201 242.5 233 242.5C266 242.5 284 262 289.5 279C295 262 313 242.5 346 242.5C378 242.5 404.5 261 404.5 299C404.5 344 321 398 289.5 424.5Z" fill="#fff"/>
+      <use href="#hwd-heart" fill="none" stroke="#000" stroke-width="21" stroke-linejoin="miter" stroke-miterlimit="6"/>
+    </mask>
+  </defs>
+  <g mask="url(#hwd-cut)" fill="#FF5A5A">
+    <path d="M76 254L288 70L501 254V497H76Z"/>
+    <path d="M30 238L288 31L546 238" fill="none" stroke="#FF5A5A" stroke-width="56"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

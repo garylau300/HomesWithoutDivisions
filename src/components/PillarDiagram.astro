@@ -1,0 +1,262 @@
+---
+import { localeHref, useTranslations, type Locale } from '../lib/i18n';
+import { PILLARS } from '../data/deliverables';
+
+/**
+ * The three pillars of an equitable tenancy, as overlapping circles.
+ *
+ * Rebuilt as vector geometry in the brand palette, replacing the raster diagram
+ * in the source document — which could not scale, translate, or be read aloud.
+ *
+ * Every pillar's text is present and readable at all times. Pointing at or
+ * focusing one only *emphasises* its circle; nothing is hidden behind an
+ * interaction, so the diagram is complete without a mouse, without sight and
+ * without JavaScript. The circles carry numerals matching the list, so the
+ * pairing never depends on colour alone.
+ */
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const copy = t.about.pillars;
+
+/** Geometry: three circles of equal radius overlapping at a common centre. */
+const CIRCLES = {
+  solution: { cx: 200, cy: 130, numeral: { x: 200, y: 84 } },
+  terms: { cx: 145, cy: 225, numeral: { x: 104, y: 268 } },
+  communication: { cx: 255, cy: 225, numeral: { x: 296, y: 268 } },
+} as const;
+
+const RADIUS = 95;
+
+/** Presentation order follows the source document: communication first. */
+const ordered = PILLARS.map((pillar, index) => ({
+  ...pillar,
+  numeral: index + 1,
+  circle: CIRCLES[pillar.id],
+  copy: t.deliverables[pillar.deliverable],
+}));
+---
+
+<div class="venn">
+  <figure class="venn__figure">
+    <svg viewBox="0 0 400 380" role="img" aria-labelledby="venn-title venn-desc">
+      <title id="venn-title">{copy.diagramTitle}</title>
+      <desc id="venn-desc">{copy.diagramDescription}</desc>
+
+      {/* The two ways of working, ringing the whole. */}
+      <g class="venn__orbit" aria-hidden="true">
+        <circle cx="200" cy="193" r="168"></circle>
+        <circle cx="352" cy="104" r="34"></circle>
+        <circle cx="48" cy="292" r="34"></circle>
+      </g>
+
+      {
+        ordered.map((pillar) => (
+          <circle
+            class={`venn__circle venn__circle--${pillar.id}`}
+            cx={pillar.circle.cx}
+            cy={pillar.circle.cy}
+            r={RADIUS}
+          />
+        ))
+      }
+
+      {
+        ordered.map((pillar) => (
+          <text
+            class="venn__numeral"
+            x={pillar.circle.numeral.x}
+            y={pillar.circle.numeral.y}
+            text-anchor="middle"
+          >
+            {pillar.numeral}
+          </text>
+        ))
+      }
+    </svg>
+    <figcaption class="venn__caption">{copy.diagramTitle}</figcaption>
+  </figure>
+
+  <ol class="venn__list">
+    {
+      ordered.map((pillar) => (
+        <li
+          class="venn__item"
+          data-pillar={pillar.id}
+          style={`--pillar-accent: ${pillar.accent}; --pillar-tint: ${pillar.accentTint};`}
+        >
+          <p class="venn__numeral-badge" aria-hidden="true">
+            {pillar.numeral}
+          </p>
+          <h3 class="venn__name">{pillar.copy.pillar}</h3>
+          <p class="venn__summary">{pillar.copy.summary}</p>
+          <p class="venn__resource">
+            <span class="venn__resource-label">{copy.linkedResource}</span>
+            <a href={`${localeHref(locale)}#resources`}>{pillar.copy.name}</a>
+          </p>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .venn {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  @media (min-width: 60rem) {
+    .venn {
+      grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+      gap: var(--space-2xl);
+    }
+  }
+
+  /* ---- Figure -------------------------------------------------------------- */
+
+  .venn__figure {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-s);
+    margin: 0;
+  }
+
+  .venn__figure svg {
+    width: min(22rem, 100%);
+    height: auto;
+    overflow: visible;
+  }
+
+  .venn__orbit circle {
+    fill: none;
+    stroke: var(--rule-strong);
+    stroke-width: 1.5;
+    stroke-dasharray: 2 7;
+    stroke-linecap: round;
+  }
+
+  .venn__circle {
+    /*
+     * Multiply keeps the overlaps reading as a genuine mix of the two colours
+     * rather than as a fourth, invented colour stacked on top.
+     */
+    mix-blend-mode: multiply;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity var(--dur) var(--ease-out),
+      transform var(--dur) var(--ease-spring);
+  }
+
+  .venn__circle--communication {
+    fill: var(--accent-communication-tint);
+  }
+
+  .venn__circle--terms {
+    fill: var(--accent-terms);
+    opacity: 0.5;
+  }
+
+  .venn__circle--solution {
+    fill: var(--accent-solution-tint);
+  }
+
+  .venn__numeral {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    fill: var(--c-eerie);
+  }
+
+  .venn__caption {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 700;
+    line-height: var(--leading-snug);
+    text-align: center;
+    text-wrap: balance;
+    color: var(--c-eerie);
+  }
+
+  /* Pointing at or focusing a pillar lifts its circle out of the stack. */
+  .venn:has(.venn__item[data-pillar='communication']:hover) .venn__circle--communication,
+  .venn:has(.venn__item[data-pillar='communication']:focus-within) .venn__circle--communication,
+  .venn:has(.venn__item[data-pillar='terms']:hover) .venn__circle--terms,
+  .venn:has(.venn__item[data-pillar='terms']:focus-within) .venn__circle--terms,
+  .venn:has(.venn__item[data-pillar='solution']:hover) .venn__circle--solution,
+  .venn:has(.venn__item[data-pillar='solution']:focus-within) .venn__circle--solution {
+    transform: scale(1.06);
+  }
+
+  /* ---- List ---------------------------------------------------------------- */
+
+  .venn__list {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .venn__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-3xs) var(--space-s);
+    padding: var(--space-s) var(--space-m);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-inline-start: 6px solid var(--pillar-accent);
+    border-radius: var(--radius-m);
+    transition:
+      transform var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
+  }
+
+  .venn__item:hover,
+  .venn__item:focus-within {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-m);
+  }
+
+  .venn__numeral-badge {
+    display: grid;
+    place-items: center;
+    grid-row: span 3;
+    align-self: start;
+    width: 2rem;
+    height: 2rem;
+    background: var(--pillar-tint);
+    border: 2px solid var(--pillar-accent);
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-size: var(--step--1);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .venn__name {
+    font-size: var(--step-1);
+  }
+
+  .venn__summary {
+    font-size: var(--step--1);
+    line-height: var(--leading-snug);
+    color: var(--ink-muted);
+  }
+
+  .venn__resource {
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  .venn__resource-label {
+    color: var(--ink-muted);
+    font-weight: 400;
+  }
+
+  .venn__resource-label::after {
+    content: ' · ';
+  }
+</style>

@@ -1,0 +1,346 @@
+---
+import { useTranslations, format, type Locale } from '../lib/i18n';
+import { fileFor, type Deliverable, type DocFormat } from '../data/deliverables';
+
+/**
+ * Language × format picker for one deliverable.
+ *
+ * Deliberately built from two radio groups and CSS `:has()`, with no JavaScript:
+ *  - it works with scripting disabled or still loading;
+ *  - a screen reader gets two properly labelled groups, arrow-key navigable,
+ *    rather than a bespoke widget;
+ *  - all four downloads are in the DOM and the selected pair is revealed. The
+ *    container is a live region, so changing either control announces what is
+ *    now on offer.
+ *
+ * Which of the four exist is decided entirely by src/data/deliverables.ts.
+ */
+interface Props {
+  deliverable: Deliverable;
+  locale: Locale;
+}
+
+const { deliverable, locale } = Astro.props;
+const t = useTranslations(locale);
+const copy = t.deliverables[deliverable.id];
+
+/** The reader's own language is preselected, so the common case is one click. */
+const languages: { value: Locale; label: string }[] = [
+  { value: 'zh', label: t.download.languageZh },
+  { value: 'en', label: t.download.languageEn },
+];
+
+/** PDF leads: it opens anywhere and prints predictably. DOCX is one tap away. */
+const formats: { value: DocFormat; label: string }[] = [
+  { value: 'pdf', label: t.download.formatPdf },
+  { value: 'docx', label: t.download.formatDocx },
+];
+
+const combinations = languages.flatMap((language) =>
+  formats.map((docFormat) => {
+    const file = fileFor(deliverable, language.value, docFormat.value);
+    const labels = { name: copy.name, language: language.label, format: docFormat.label };
+    return {
+      key: `${language.value}-${docFormat.value}`,
+      file,
+      srLabel: format(
+        file.status === 'available' ? t.download.srAvailable : t.download.srComingSoon,
+        labels,
+      ),
+    };
+  }),
+);
+
+const group = deliverable.id;
+---
+
+<div class="picker" data-deliverable={deliverable.id}>
+  <div class="picker__group" role="radiogroup" aria-labelledby={`${group}-lang-label`}>
+    <span class="picker__label" id={`${group}-lang-label`}>{t.download.languageLabel}</span>
+    <div class="segmented">
+      {
+        languages.map((language) => (
+          <Fragment>
+            <input
+              type="radio"
+              id={`${group}-lang-${language.value}`}
+              name={`${group}-lang`}
+              value={language.value}
+              data-role="lang"
+              checked={language.value === locale}
+            />
+            <label
+              class="segmented__option"
+              for={`${group}-lang-${language.value}`}
+              lang={language.value === 'zh' ? 'zh-Hant-HK' : 'en-GB'}
+            >
+              {language.label}
+            </label>
+          </Fragment>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="picker__group" role="radiogroup" aria-labelledby={`${group}-format-label`}>
+    <span class="picker__label" id={`${group}-format-label`}>{t.download.formatLabel}</span>
+    <div class="segmented">
+      {
+        formats.map((docFormat, index) => (
+          <Fragment>
+            <input
+              type="radio"
+              id={`${group}-format-${docFormat.value}`}
+              name={`${group}-format`}
+              value={docFormat.value}
+              data-role="format"
+              checked={index === 0}
+            />
+            <label class="segmented__option" for={`${group}-format-${docFormat.value}`}>
+              {docFormat.label}
+            </label>
+          </Fragment>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="picker__outputs" aria-live="polite">
+    {
+      combinations.map(({ key, file, srLabel }) =>
+        file.status === 'available' ? (
+          <a class="picker__action" data-combo={key} href={file.href} download>
+            <svg viewBox="0 0 20 20" aria-hidden="true" class="picker__icon">
+              <path
+                d="M10 3v9m0 0 3.5-3.5M10 12 6.5 8.5M4 15.5h12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span aria-hidden="true">{t.download.action}</span>
+            <span class="visually-hidden">{srLabel}</span>
+          </a>
+        ) : (
+          <div class="picker__action picker__action--soon" data-combo={key}>
+            <p class="picker__soon-label">
+              <svg viewBox="0 0 20 20" aria-hidden="true" class="picker__icon">
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="7"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <path
+                  d="M10 6.2v4.2l2.6 1.6"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span aria-hidden="true">{t.download.comingSoon}</span>
+              <span class="visually-hidden">{srLabel}</span>
+            </p>
+            <p class="picker__soon-note">{t.download.comingSoonNote}</p>
+          </div>
+        ),
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .picker {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .picker__group {
+    display: grid;
+    grid-template-columns: minmax(2.5rem, auto) 1fr;
+    align-items: center;
+    gap: var(--space-s);
+  }
+
+  .picker__label {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+
+  /* ---- Segmented control ------------------------------------------------- */
+
+  .segmented {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 3px;
+    background: var(--c-floral);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-pill);
+    isolation: isolate;
+  }
+
+  /* The pill that slides between the two options. */
+  .segmented::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset-block: 3px;
+    inset-inline-start: 3px;
+    width: calc(50% - 3px);
+    background: var(--c-eerie);
+    border-radius: var(--radius-pill);
+    transition: transform var(--dur) var(--ease-spring);
+  }
+
+  .segmented:has(input:last-of-type:checked)::before {
+    transform: translateX(100%);
+  }
+
+  .segmented input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .segmented__option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.25rem;
+    padding-inline: var(--space-xs);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--1);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .segmented input:checked + .segmented__option {
+    color: var(--c-floral);
+  }
+
+  .segmented input:not(:checked) + .segmented__option:hover {
+    color: var(--c-coral);
+  }
+
+  .segmented input:focus-visible + .segmented__option {
+    outline: var(--focus-width) solid var(--focus-color);
+    outline-offset: var(--focus-offset);
+  }
+
+  /* ---- Outputs ------------------------------------------------------------ */
+
+  .picker__outputs {
+    display: grid;
+    margin-block-start: var(--space-3xs);
+  }
+
+  .picker__action {
+    display: none;
+  }
+
+  a.picker__action {
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2xs);
+    min-height: 2.75rem;
+    padding: var(--space-2xs) var(--space-m);
+    background: var(--c-eerie);
+    color: var(--c-floral);
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out);
+  }
+
+  a.picker__action:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-m);
+  }
+
+  .picker__action--soon {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3xs);
+    padding: var(--space-xs) var(--space-s);
+    background: color-mix(in srgb, var(--c-jet) 6%, transparent);
+    border: 1px dashed var(--rule-strong);
+    border-radius: var(--radius-m);
+    text-align: center;
+  }
+
+  .picker__soon-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3xs);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .picker__soon-note {
+    font-size: var(--step--1);
+    line-height: var(--leading-snug);
+    color: var(--ink-muted);
+  }
+
+  .picker__icon {
+    width: 1.15em;
+    height: 1.15em;
+    flex: none;
+  }
+
+  /*
+   * Four static rules reveal the combination the two radio groups describe.
+   * Written against the inputs' values rather than their ids, so they hold for
+   * every card without any per-card CSS.
+   */
+  .picker:has(input[data-role='lang'][value='zh']:checked):has(
+      input[data-role='format'][value='pdf']:checked
+    )
+    .picker__action[data-combo='zh-pdf'],
+  .picker:has(input[data-role='lang'][value='zh']:checked):has(
+      input[data-role='format'][value='docx']:checked
+    )
+    .picker__action[data-combo='zh-docx'],
+  .picker:has(input[data-role='lang'][value='en']:checked):has(
+      input[data-role='format'][value='pdf']:checked
+    )
+    .picker__action[data-combo='en-pdf'],
+  .picker:has(input[data-role='lang'][value='en']:checked):has(
+      input[data-role='format'][value='docx']:checked
+    )
+    .picker__action[data-combo='en-docx'] {
+    display: flex;
+  }
+
+  /*
+   * Without :has() there is no way to reveal one combination, so show them all
+   * rather than none: every option stays reachable, just less tidy.
+   */
+  @supports not selector(:has(*)) {
+    .picker__action {
+      display: flex;
+    }
+
+    .picker__outputs {
+      gap: var(--space-2xs);
+    }
+
+    .picker__action--soon ~ .picker__action--soon .picker__soon-note {
+      display: none;
+    }
+  }
+</style>

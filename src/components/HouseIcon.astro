@@ -1,0 +1,88 @@
+---
+/**
+ * The Homes Without Divisions mark, as vector geometry.
+ *
+ * The pale lines in the logo are knockouts, not white paint, so they are cut
+ * with a mask and the mark reads correctly on any background. Geometry matches
+ * public/favicon.svg exactly.
+ *
+ * `animated` draws the heart's outline on first paint — the heart appearing to
+ * bridge the division. Suppressed under prefers-reduced-motion.
+ */
+interface Props {
+  /** Unique per instance: SVG ids are document-global. */
+  id?: string;
+  size?: number | string;
+  animated?: boolean;
+  class?: string;
+}
+
+const { id = 'hwd-mark', size = 48, animated = false, class: className } = Astro.props;
+const maskId = `${id}-cut`;
+const heartId = `${id}-heart`;
+const HEART =
+  'M289.5 424.5C258 398 174.5 344 174.5 299C174.5 261 201 242.5 233 242.5C266 242.5 284 262 289.5 279C295 262 313 242.5 346 242.5C378 242.5 404.5 261 404.5 299C404.5 344 321 398 289.5 424.5Z';
+---
+
+<svg
+  class:list={['house-icon', className, animated && 'house-icon--animated']}
+  viewBox="0 -38.5 576 576"
+  width={size}
+  height={size}
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="-38.5" width="576" height="576">
+      <rect x="0" y="-38.5" width="576" height="576" fill="#fff"></rect>
+      <rect x="271.5" y="48" width="34" height="449" fill="#000"></rect>
+      <path id={heartId} d={HEART} fill="#fff"></path>
+      <use
+        class="house-icon__heart-stroke"
+        href={`#${heartId}`}
+        fill="none"
+        stroke="#000"
+        stroke-width="21"
+        stroke-linejoin="miter"
+        stroke-miterlimit="6"></use>
+    </mask>
+  </defs>
+  <g mask={`url(#${maskId})`} fill="currentColor">
+    <path d="M76 254L288 70L501 254V497H76Z"></path>
+    <path
+      d="M30 238L288 31L546 238"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="56"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path>
+  </g>
+</svg>
+
+<style>
+  .house-icon {
+    color: var(--c-coral);
+    flex: none;
+  }
+
+  /* The heart draws itself out of the coral, bridging the division. */
+  .house-icon--animated .house-icon__heart-stroke {
+    stroke-dasharray: 720;
+    stroke-dashoffset: 720;
+    animation: draw-heart 1.6s var(--ease-out) 0.35s forwards;
+  }
+
+  @keyframes draw-heart {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .house-icon--animated .house-icon__heart-stroke {
+      stroke-dasharray: none;
+      stroke-dashoffset: 0;
+      animation: none;
+    }
+  }
+</style>

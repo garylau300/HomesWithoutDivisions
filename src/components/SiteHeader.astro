@@ -1,0 +1,170 @@
+---
+import { localeHref, useTranslations, type Locale } from '../lib/i18n';
+import LangToggle from './LangToggle.astro';
+import HouseIcon from './HouseIcon.astro';
+
+interface Props {
+  locale: Locale;
+  page: string;
+}
+
+const { locale, page } = Astro.props;
+const t = useTranslations(locale);
+const logoAlt = `${t.site.name} ${t.site.nameSecondary}`;
+
+const links = [
+  { href: localeHref(locale), label: t.nav.home, page: '' },
+  { href: localeHref(locale, '/about'), label: t.nav.about, page: '/about' },
+];
+---
+
+<header class="site-header" data-site-header>
+  <div class="site-header__inner container">
+    <a class="site-header__logo" href={localeHref(locale)} aria-label={`${logoAlt} — ${t.nav.home}`}>
+      {/* The full lockup where there is room; the mark alone on a narrow screen. */}
+      <img
+        class="site-header__lockup"
+        src="/brand/hwd-lockup-660.png"
+        alt={logoAlt}
+        width="660"
+        height="128"
+        decoding="async"
+      />
+      <HouseIcon id="header-mark" class="site-header__mark" size={38} />
+    </a>
+
+    <nav class="site-header__nav" aria-label={t.nav.menu}>
+      <ul class="site-header__links">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                class="site-header__link"
+                href={link.href}
+                aria-current={link.page === page ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <LangToggle locale={locale} page={page} />
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Condense the header once the page has scrolled past the hero's top edge.
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  if (header) {
+    const onScroll = () => header.classList.toggle('is-condensed', window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--page) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color var(--dur) var(--ease-out),
+      box-shadow var(--dur) var(--ease-out);
+  }
+
+  .site-header.is-condensed {
+    border-bottom-color: var(--rule);
+    box-shadow: var(--shadow-s);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding-block: var(--space-xs);
+    transition: padding-block var(--dur) var(--ease-out);
+  }
+
+  .site-header.is-condensed .site-header__inner {
+    padding-block: var(--space-2xs);
+  }
+
+  .site-header__logo {
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-s);
+  }
+
+  .site-header__lockup {
+    width: auto;
+    height: 3rem;
+    transition: height var(--dur) var(--ease-out);
+  }
+
+  .site-header.is-condensed .site-header__lockup {
+    height: 2.5rem;
+  }
+
+  .site-header__mark {
+    display: none;
+  }
+
+  .site-header__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+  }
+
+  .site-header__links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .site-header__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.375rem;
+    padding-inline: var(--space-xs);
+    border-radius: var(--radius-pill);
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      color var(--dur-fast) var(--ease-out);
+  }
+
+  .site-header__link:hover {
+    background: var(--c-pale-pink);
+    color: var(--c-eerie);
+  }
+
+  /* The current page is underlined as well as tinted, so it is not colour alone. */
+  .site-header__link[aria-current='page'] {
+    background: var(--c-pale-pink);
+    text-decoration: underline;
+    text-decoration-color: var(--c-coral);
+    text-decoration-thickness: 2px;
+  }
+
+  @media (max-width: 34rem) {
+    .site-header__lockup {
+      display: none;
+    }
+
+    .site-header__mark {
+      display: block;
+    }
+
+    .site-header__nav {
+      gap: var(--space-2xs);
+    }
+  }
+</style>

@@ -1,0 +1,210 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PillarDiagram from '../../components/PillarDiagram.astro';
+import { LOCALES, localeHref, useTranslations, type Locale } from '../../lib/i18n';
+
+export const getStaticPaths = (() =>
+  LOCALES.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const locale = Astro.params.lang as Locale;
+const t = useTranslations(locale);
+const about = t.about;
+---
+
+<BaseLayout
+  locale={locale}
+  page="/about"
+  title={about.title}
+  description={about.hero.lead}
+>
+  <!-- ===== Hero ========================================================== -->
+  <section class="about-hero">
+    <div class="container container--narrow about-hero__inner">
+      <p class="eyebrow">{about.hero.eyebrow}</p>
+      <h1 class="about-hero__heading">{about.hero.heading}</h1>
+      <p class="about-hero__lead">{about.hero.lead}</p>
+    </div>
+  </section>
+
+  <!-- ===== Mission ======================================================= -->
+  <section class="section mission" aria-labelledby="mission-heading">
+    <div class="container container--narrow">
+      <header class="section-head" data-reveal>
+        <p class="eyebrow">{about.mission.eyebrow}</p>
+        <h2 id="mission-heading">{about.mission.heading}</h2>
+      </header>
+
+      <div class="prose" data-reveal>
+        {about.mission.body.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+
+      <h3 class="mission__methods-heading" data-reveal>{about.mission.methodsHeading}</h3>
+      <ul class="mission__methods">
+        {
+          about.mission.methods.map((method, index) => (
+            <li class="mission__method" data-reveal style={`--reveal-delay: ${index * 110}ms;`}>
+              <span class="mission__method-marker" aria-hidden="true">
+                {index + 1}
+              </span>
+              <h4 class="mission__method-name">{method.name}</h4>
+              <p class="mission__method-body">{method.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== The three pillars ============================================= -->
+  <section class="section pillars-section" aria-labelledby="pillars-heading">
+    <div class="container">
+      <header class="section-head" data-reveal>
+        <p class="eyebrow">{about.pillars.eyebrow}</p>
+        <h2 id="pillars-heading">{about.pillars.heading}</h2>
+        <p class="section-head__lead">{about.pillars.lead}</p>
+      </header>
+
+      <div data-reveal>
+        <PillarDiagram locale={locale} />
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== The capability approach ======================================= -->
+  <section class="section capability" aria-labelledby="capability-heading">
+    <div class="container container--narrow">
+      <header class="section-head" data-reveal>
+        <p class="eyebrow">{about.capability.eyebrow}</p>
+        <h2 id="capability-heading">{about.capability.heading}</h2>
+      </header>
+
+      <div class="prose capability__body" data-reveal>
+        {about.capability.body.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+
+      <p class="capability__cta" data-reveal>
+        <a class="button" href={`${localeHref(locale)}#resources`}>
+          {about.capability.resourcesCta}
+        </a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---- Hero ---------------------------------------------------------------- */
+
+  .about-hero {
+    padding-block: var(--space-2xl);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--c-pale-pink) 55%, var(--page)) 0%,
+      var(--page) 100%
+    );
+  }
+
+  .about-hero__inner {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .about-hero__heading {
+    font-size: var(--step-4);
+    max-width: 18ch;
+  }
+
+  .about-hero__lead {
+    font-size: var(--step-1);
+    line-height: var(--leading-snug);
+    color: var(--ink-muted);
+    max-width: var(--measure);
+  }
+
+  /* ---- Shared section head ------------------------------------------------- */
+
+  .section-head {
+    display: grid;
+    gap: var(--space-2xs);
+    max-width: 52rem;
+    margin-block-end: var(--space-l);
+  }
+
+  .section-head h2 {
+    font-size: var(--step-3);
+  }
+
+  .section-head__lead {
+    color: var(--ink-muted);
+    max-width: var(--measure);
+  }
+
+  /* ---- Mission ------------------------------------------------------------- */
+
+  .mission__methods-heading {
+    margin-block-start: var(--space-xl);
+    font-size: var(--step-1);
+  }
+
+  .mission__methods {
+    display: grid;
+    gap: var(--space-m);
+    margin-block-start: var(--space-s);
+  }
+
+  @media (min-width: 44rem) {
+    .mission__methods {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .mission__method {
+    display: grid;
+    gap: var(--space-3xs);
+    padding: var(--space-m);
+    background: var(--c-floral);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-m);
+  }
+
+  .mission__method-marker {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    margin-block-end: var(--space-3xs);
+    background: var(--c-eerie);
+    color: var(--c-floral);
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-size: var(--step--1);
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .mission__method-name {
+    font-size: var(--step-1);
+  }
+
+  .mission__method-body {
+    font-size: var(--step--1);
+    line-height: var(--leading-snug);
+    color: var(--ink-muted);
+  }
+
+  /* ---- Pillars ------------------------------------------------------------- */
+
+  .pillars-section {
+    background: color-mix(in srgb, var(--c-opal) 26%, var(--page));
+  }
+
+  /* ---- Capability ---------------------------------------------------------- */
+
+  .capability__body p {
+    max-width: var(--measure);
+  }
+
+  .capability__cta {
+    margin-block-start: var(--space-l);
+  }
+</style>

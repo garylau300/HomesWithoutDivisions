@@ -1,0 +1,129 @@
+/*
+ * Design tokens — Homes Without Divisions
+ * Every colour here comes from the HWD Style Guide v.1. Nothing else is invented.
+ *
+ * A contrast rule runs through the whole system and is enforced by
+ * scripts/verify.mjs: text on a brand colour is always Eerie Black.
+ * White on Coral is 3.0:1 and white on Keppel is 2.4:1 — both fail WCAG AA.
+ * Eerie Black on Coral is 5.4:1 and on Keppel 6.7:1 — both pass.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---- Palette (style guide, p.5) ---------------------------------------- */
+  --c-coral: #ff5a5a; /* Orange Red Crayola */
+  --c-pale-pink: #ffdada; /* Pale Pink        */
+  --c-keppel: #4db6a6; /* Keppel            */
+  --c-opal: #c6d8d3; /* Opal                */
+  --c-yellow: #ffd333; /* Cyber Yellow      */
+  --c-floral: #fffbf5; /* Floral White      */
+  --c-eerie: #222222; /* Eerie Black        */
+  --c-jet: #333333; /* Jet                  */
+  --c-white: #ffffff;
+
+  /* ---- Semantic ---------------------------------------------------------- */
+  --page: var(--c-floral);
+  --surface: var(--c-white);
+  --ink: var(--c-eerie);
+  --ink-muted: var(--c-jet);
+  --rule: color-mix(in srgb, var(--c-jet) 16%, transparent);
+  --rule-strong: color-mix(in srgb, var(--c-jet) 30%, transparent);
+
+  /*
+   * Approved pairings (style guide, p.6). Each accent has exactly one approved
+   * tint to sit on; nothing here pairs colours the guide does not pair.
+   *   Coral  ↔ Pale Pink
+   *   Keppel ↔ Opal
+   *   Yellow ↔ Floral White
+   *   Eerie Black ↔ Floral White
+   */
+  --accent-communication: var(--c-coral);
+  --accent-communication-tint: var(--c-pale-pink);
+  --accent-terms: var(--c-yellow);
+  --accent-terms-tint: var(--c-floral);
+  --accent-solution: var(--c-keppel);
+  --accent-solution-tint: var(--c-opal);
+
+  /* ---- Type -------------------------------------------------------------- */
+  --font-sans: 'IBM Plex Sans', 'Noto Sans TC', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'PingFang HK', 'Microsoft JhengHei', sans-serif;
+  /*
+   * Tabarra is the secondary, friendlier face called for by the style guide, but
+   * it is a commercial typeface that cannot be redistributed here. Until licensed
+   * files are added (see src/styles/tabarra.css) this resolves to a locally
+   * installed copy if the reader has one, otherwise to IBM Plex Sans — which the
+   * guide also sanctions for headings.
+   */
+  --font-display: 'Tabarra Pro Round', 'Tabarra Pro SemiSerif', 'Tabarra Pro',
+    var(--font-sans);
+
+  /* Fluid scale, 320px → 1280px viewport */
+  --step--1: clamp(0.8125rem, 0.78rem + 0.16vw, 0.875rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  --step-1: clamp(1.125rem, 1.06rem + 0.32vw, 1.3125rem);
+  --step-2: clamp(1.375rem, 1.25rem + 0.6vw, 1.75rem);
+  --step-3: clamp(1.625rem, 1.4rem + 1.1vw, 2.375rem);
+  --step-4: clamp(2rem, 1.55rem + 2.2vw, 3.25rem);
+  --step-5: clamp(2.5rem, 1.7rem + 3.9vw, 4.5rem);
+
+  --leading-tight: 1.15;
+  --leading-snug: 1.3;
+  --leading-body: 1.65;
+  --tracking-tight: -0.02em;
+  --tracking-wide: 0.08em;
+
+  /* ---- Space ------------------------------------------------------------- */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-s: 1rem;
+  --space-m: 1.5rem;
+  --space-l: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  --space-3xl: clamp(5rem, 3rem + 8vw, 9rem);
+
+  /* ---- Shape ------------------------------------------------------------- */
+  --radius-s: 0.5rem;
+  --radius-m: 0.875rem;
+  --radius-l: 1.5rem;
+  --radius-pill: 999px;
+
+  --shadow-s: 0 1px 2px color-mix(in srgb, var(--c-eerie) 6%, transparent);
+  --shadow-m: 0 2px 4px color-mix(in srgb, var(--c-eerie) 5%, transparent),
+    0 8px 20px -8px color-mix(in srgb, var(--c-eerie) 14%, transparent);
+  --shadow-l: 0 4px 8px color-mix(in srgb, var(--c-eerie) 5%, transparent),
+    0 18px 40px -12px color-mix(in srgb, var(--c-eerie) 20%, transparent);
+
+  /* ---- Layout ------------------------------------------------------------ */
+  --measure: 62ch;
+  --width-page: 76rem;
+  --width-narrow: 44rem;
+  --gutter: clamp(1.25rem, 0.9rem + 1.8vw, 2.5rem);
+
+  /* ---- Motion ------------------------------------------------------------ */
+  --dur-fast: 140ms;
+  --dur: 260ms;
+  --dur-slow: 560ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* ---- Focus ------------------------------------------------------------- */
+  --focus-width: 3px;
+  --focus-color: var(--c-eerie);
+  --focus-offset: 3px;
+}
+
+/*
+ * Traditional Chinese needs a little more room than Latin at the same nominal
+ * size: the glyphs are denser and the style guide asks for Chinese to read as
+ * the larger, primary voice.
+ */
+:lang(zh) {
+  --leading-body: 1.85;
+  --leading-snug: 1.45;
+  --leading-tight: 1.3;
+  --tracking-tight: 0;
+  --measure: 36em;
+}

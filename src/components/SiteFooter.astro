@@ -1,0 +1,153 @@
+---
+import { localeHref, useTranslations, type Locale } from '../lib/i18n';
+import HouseIcon from './HouseIcon.astro';
+
+interface Props {
+  locale: Locale;
+  page: string;
+}
+
+const { locale, page } = Astro.props;
+const t = useTranslations(locale);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div class="site-footer__identity">
+      <HouseIcon id="footer-mark" size={44} />
+      <div>
+        {/* Chinese above and larger than English, per the style guide. */}
+        <p class="site-footer__name" lang={locale === 'zh' ? undefined : 'zh-Hant-HK'}>
+          {locale === 'zh' ? t.site.name : t.site.nameSecondary}
+        </p>
+        <p class="site-footer__name-secondary" lang={locale === 'zh' ? 'en-GB' : undefined}>
+          {locale === 'zh' ? t.site.nameSecondary : t.site.name}
+        </p>
+        <p class="site-footer__motto">{t.site.motto}</p>
+      </div>
+    </div>
+
+    <nav class="site-footer__nav" aria-label={t.nav.menu}>
+      <ul>
+        <li><a href={localeHref(locale)}>{t.nav.home}</a></li>
+        <li><a href={localeHref(locale, '/about')}>{t.nav.about}</a></li>
+        <li><a href={`${localeHref(locale)}#resources`}>{t.nav.resources}</a></li>
+      </ul>
+    </nav>
+
+    <div class="site-footer__legal">
+      <p class="site-footer__initiative">{t.site.initiative}</p>
+      <p>{t.footer.licence}</p>
+      <p class="site-footer__copyright">
+        {t.footer.copyright.replace('©', `© ${year}`)}
+      </p>
+    </div>
+  </div>
+
+  <a class="site-footer__top" href={`${localeHref(locale, page)}#main`}>
+    <span aria-hidden="true">↑</span>
+    {t.footer.backToTop}
+  </a>
+</footer>
+
+<style>
+  .site-footer {
+    margin-block-start: auto;
+    padding-block: var(--space-2xl) var(--space-l);
+    background: var(--c-pale-pink);
+    color: var(--c-eerie);
+  }
+
+  .site-footer__inner {
+    display: grid;
+    gap: var(--space-xl);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 48rem) {
+    .site-footer__inner {
+      grid-template-columns: minmax(0, 1.2fr) auto minmax(0, 1.4fr);
+      gap: var(--space-l);
+    }
+  }
+
+  .site-footer__identity {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-s);
+  }
+
+  .site-footer__name {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 700;
+    line-height: var(--leading-tight);
+  }
+
+  .site-footer__name-secondary {
+    font-size: var(--step-0);
+    font-weight: 600;
+    line-height: var(--leading-snug);
+  }
+
+  .site-footer__motto {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+  }
+
+  .site-footer__nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .site-footer__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-decoration-color: color-mix(in srgb, var(--c-eerie) 35%, transparent);
+  }
+
+  .site-footer__nav a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .site-footer__legal {
+    display: grid;
+    gap: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    max-width: 46ch;
+  }
+
+  .site-footer__initiative {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .site-footer__copyright {
+    color: var(--ink);
+  }
+
+  .site-footer__top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3xs);
+    width: min(100% - var(--gutter) * 2, var(--width-page));
+    margin: var(--space-xl) auto 0;
+    padding-block-start: var(--space-s);
+    border-top: 1px solid color-mix(in srgb, var(--c-eerie) 14%, transparent);
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .site-footer__top:hover {
+    text-decoration: underline;
+  }
+</style>

@@ -1,0 +1,430 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DeliverableCard from '../../components/DeliverableCard.astro';
+import HouseIcon from '../../components/HouseIcon.astro';
+import { DELIVERABLES, PILLARS } from '../../data/deliverables';
+import { LOCALES, localeHref, useTranslations, type Locale } from '../../lib/i18n';
+
+export const getStaticPaths = (() =>
+  LOCALES.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const locale = Astro.params.lang as Locale;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  page=""
+  title={t.home.title}
+  description={t.site.description}
+>
+  <!-- ===== Hero ========================================================== -->
+  <section class="hero">
+    <div class="hero__decor" aria-hidden="true">
+      <span class="hero__blob hero__blob--pink"></span>
+      <span class="hero__blob hero__blob--opal"></span>
+    </div>
+
+    <div class="container hero__inner">
+      <p class="eyebrow hero__eyebrow">{t.home.hero.eyebrow}</p>
+
+      <HouseIcon id="hero-mark" class="hero__mark" size={92} animated />
+
+      {/* Chinese above and larger than English, per the style guide. */}
+      <h1 class="hero__title">
+        <span class="hero__title-primary">{t.site.name}</span>
+        <span class="hero__title-secondary" lang={locale === 'zh' ? 'en-GB' : 'zh-Hant-HK'}>
+          {t.site.nameSecondary}
+        </span>
+      </h1>
+
+      <p class="hero__motto">{t.site.motto}</p>
+      <p class="hero__lead">{t.home.hero.lead}</p>
+
+      <div class="hero__actions">
+        <a class="button" href="#resources">{t.home.hero.ctaPrimary}</a>
+        <a class="button button--ghost" href={localeHref(locale, '/about')}>
+          {t.home.hero.ctaSecondary}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== The three deliverables ======================================== -->
+  <section class="section resources" id="resources" aria-labelledby="resources-heading">
+    <div class="container">
+      <header class="section-head" data-reveal>
+        <p class="eyebrow">{t.home.deliverables.eyebrow}</p>
+        <h2 id="resources-heading">{t.home.deliverables.heading}</h2>
+        <p class="section-head__lead">{t.home.deliverables.lead}</p>
+      </header>
+
+      <div class="resources__grid">
+        {
+          DELIVERABLES.map((deliverable, index) => (
+            <DeliverableCard deliverable={deliverable} locale={locale} delay={index * 110} />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== The three pillars ============================================= -->
+  <section class="section section--tight pillars" aria-labelledby="pillars-heading">
+    <div class="container">
+      <header class="section-head" data-reveal>
+        <p class="eyebrow">{t.home.pillars.eyebrow}</p>
+        <h2 id="pillars-heading">{t.home.pillars.heading}</h2>
+        <p class="section-head__lead">{t.home.pillars.lead}</p>
+      </header>
+
+      <ol class="pillars__list">
+        {
+          PILLARS.map((pillar, index) => {
+            const copy = t.deliverables[pillar.deliverable];
+            return (
+              <li
+                class="pillars__item"
+                data-reveal
+                style={`--pillar-accent: ${pillar.accent}; --pillar-tint: ${pillar.accentTint}; --reveal-delay: ${index * 90}ms;`}
+              >
+                <span class="pillars__rule" aria-hidden="true" />
+                <h3 class="pillars__name">{copy.pillar}</h3>
+                <p class="pillars__resource">{copy.name}</p>
+              </li>
+            );
+          })
+        }
+      </ol>
+
+      <p class="pillars__cta" data-reveal>
+        <a class="button button--ghost" href={localeHref(locale, '/about')}>
+          {t.home.pillars.cta}
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== Important notice ============================================== -->
+  <section class="section--tight notice" aria-labelledby="notice-heading">
+    <div class="container container--narrow notice__inner" data-reveal>
+      <p class="eyebrow notice__eyebrow">{t.home.notice.eyebrow}</p>
+      <h2 id="notice-heading" class="notice__heading">{t.home.notice.heading}</h2>
+      <p class="notice__lead">{t.home.notice.lead}</p>
+      <ul class="notice__list">
+        {
+          t.home.notice.items.map((item) => (
+            <li>
+              <span class="notice__marker" aria-hidden="true" />
+              <span>{item}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="notice__footnote">{t.home.notice.footnote}</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---- Hero ---------------------------------------------------------------- */
+
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: var(--space-xl) var(--space-2xl);
+    text-align: center;
+  }
+
+  .hero__decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .hero__blob {
+    position: absolute;
+    border-radius: 50%;
+    /* A soft wash, not a hard disc clipped by the section edge. */
+    filter: blur(48px);
+    opacity: 0.55;
+  }
+
+  .hero__blob--pink {
+    width: min(34rem, 70vw);
+    aspect-ratio: 1;
+    inset-block-start: -12rem;
+    inset-inline-start: -10rem;
+    background: var(--c-pale-pink);
+    animation: drift-a 26s var(--ease-out) infinite alternate;
+  }
+
+  .hero__blob--opal {
+    width: min(26rem, 60vw);
+    aspect-ratio: 1;
+    inset-block-start: 4rem;
+    inset-inline-end: -9rem;
+    background: var(--c-opal);
+    animation: drift-b 32s var(--ease-out) infinite alternate;
+  }
+
+  @keyframes drift-a {
+    to {
+      transform: translate3d(3rem, 2rem, 0) scale(1.08);
+    }
+  }
+
+  @keyframes drift-b {
+    to {
+      transform: translate3d(-2.5rem, 3rem, 0) scale(1.1);
+    }
+  }
+
+  .hero__inner {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-s);
+  }
+
+  /* Each element rises in turn, so the eye lands on the motto. */
+  .hero__eyebrow,
+  .hero__mark,
+  .hero__title,
+  .hero__motto,
+  .hero__lead,
+  .hero__actions {
+    animation: rise 0.75s var(--ease-out) backwards;
+  }
+
+  .hero__eyebrow {
+    animation-delay: 0.05s;
+  }
+  .hero__mark {
+    animation-delay: 0.12s;
+  }
+  .hero__title {
+    animation-delay: 0.2s;
+  }
+  .hero__motto {
+    animation-delay: 0.3s;
+  }
+  .hero__lead {
+    animation-delay: 0.4s;
+  }
+  .hero__actions {
+    animation-delay: 0.5s;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+  }
+
+  .hero__title {
+    display: grid;
+    gap: 0.1em;
+    margin-block-start: var(--space-2xs);
+  }
+
+  .hero__title-primary {
+    font-size: var(--step-5);
+    line-height: 1.05;
+  }
+
+  .hero__title-secondary {
+    font-family: var(--font-sans);
+    font-size: var(--step-2);
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--ink-muted);
+  }
+
+  .hero__motto {
+    max-width: 28ch;
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 700;
+    line-height: var(--leading-snug);
+    color: var(--c-eerie);
+  }
+
+  .hero__lead {
+    max-width: 46ch;
+    color: var(--ink-muted);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-s);
+    margin-block-start: var(--space-2xs);
+  }
+
+  /* ---- Shared section head ------------------------------------------------- */
+
+  .section-head {
+    display: grid;
+    gap: var(--space-2xs);
+    max-width: 52rem;
+    margin-block-end: var(--space-l);
+  }
+
+  .section-head h2 {
+    font-size: var(--step-3);
+  }
+
+  .section-head__lead {
+    color: var(--ink-muted);
+    max-width: var(--measure);
+  }
+
+  /* ---- Resources ----------------------------------------------------------- */
+
+  .resources {
+    background: linear-gradient(
+      180deg,
+      var(--page) 0%,
+      color-mix(in srgb, var(--c-opal) 22%, var(--page)) 100%
+    );
+  }
+
+  .resources__grid {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 46rem) {
+    .resources__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 68rem) {
+    .resources__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /* ---- Pillars ------------------------------------------------------------- */
+
+  .pillars {
+    background: color-mix(in srgb, var(--c-opal) 22%, var(--page));
+  }
+
+  .pillars__list {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: 1fr;
+    counter-reset: pillar;
+  }
+
+  @media (min-width: 42rem) {
+    .pillars__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .pillars__item {
+    display: grid;
+    gap: var(--space-2xs);
+    padding-block-start: var(--space-s);
+  }
+
+  .pillars__rule {
+    display: block;
+    height: 6px;
+    border-radius: var(--radius-pill);
+    background: var(--pillar-accent);
+    transform-origin: left center;
+    transition: transform var(--dur-slow) var(--ease-out);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  /* Drawn in full by default; only JavaScript makes it grow on reveal. */
+  :global(html.js) .pillars__item .pillars__rule {
+    transform: scaleX(0.25);
+  }
+
+  :global(html.js) .pillars__item.is-revealed .pillars__rule {
+    transform: scaleX(1);
+  }
+
+  .pillars__name {
+    font-size: var(--step-2);
+  }
+
+  .pillars__resource {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink-muted);
+  }
+
+  .pillars__cta {
+    margin-block-start: var(--space-xl);
+  }
+
+  /* ---- Notice -------------------------------------------------------------- */
+
+  .notice {
+    padding-block-end: var(--space-2xl);
+  }
+
+  .notice__inner {
+    padding: var(--space-l);
+    background: var(--c-pale-pink);
+    border-radius: var(--radius-l);
+    /* An accent edge marks it as a warning without relying on colour alone. */
+    border-inline-start: 6px solid var(--c-coral);
+  }
+
+  .notice__eyebrow {
+    color: var(--ink);
+  }
+
+  .notice__heading {
+    margin-block: var(--space-3xs) var(--space-xs);
+    font-size: var(--step-2);
+  }
+
+  .notice__lead {
+    max-width: var(--measure);
+  }
+
+  .notice__list {
+    display: grid;
+    gap: var(--space-2xs);
+    margin-block: var(--space-s);
+  }
+
+  .notice__list li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2xs);
+    align-items: start;
+    max-width: var(--measure);
+  }
+
+  .notice__marker {
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-block-start: 0.55em;
+    background: var(--c-coral);
+    border: 1px solid var(--c-eerie);
+    border-radius: 50%;
+    flex: none;
+  }
+
+  .notice__footnote {
+    padding-block-start: var(--space-s);
+    border-top: 1px solid color-mix(in srgb, var(--c-eerie) 18%, transparent);
+    font-size: var(--step--1);
+    color: var(--ink-muted);
+    max-width: var(--measure);
+  }
+</style>
