@@ -402,6 +402,101 @@ console.log('\n── Header lockup ──────────────�
   await tab.close();
 }
 
+console.log('\n── Reading spine (About) ────────────────────────────────');
+{
+  /*
+   * The approach section's rail fills through a clip-path driven by a custom
+   * property — the same shape of interpolating calc that silently collapsed the
+   * header lockup. So this asserts the three states that matter: empty before
+   * the section, filling through it, complete after; the dots level with the
+   * text they mark; and the whole spine drawn when nothing is scripting it.
+   */
+  for (const path of ['/zh/about', '/en/about']) {
+    const tab = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await tab.goto(`${origin}${path}`, { waitUntil: 'networkidle' });
+
+    const readProgress = () =>
+      tab.evaluate(() => {
+        const rail = document.querySelector('.approach');
+        return {
+          progress: Number(rail.style.getPropertyValue('--read-progress') || 0),
+          reached: [...document.querySelectorAll('.approach__step')].filter((s) =>
+            s.classList.contains('is-reached'),
+          ).length,
+        };
+      });
+
+    const railTop = await tab.evaluate(
+      () => document.querySelector('.approach').getBoundingClientRect().top + window.scrollY,
+    );
+    const railHeight = await tab.evaluate(
+      () => document.querySelector('.approach').getBoundingClientRect().height,
+    );
+
+    await tab.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await tab.waitForTimeout(120);
+    const before = await readProgress();
+
+    await tab.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), railTop - 200);
+    await tab.waitForTimeout(120);
+    const during = await readProgress();
+
+    await tab.evaluate((y) => window.scrollTo({ top: y, behavior: 'instant' }), railTop + railHeight);
+    await tab.waitForTimeout(120);
+    const after = await readProgress();
+
+    /* Every dot level with the first line of the paragraph it marks. */
+    const drift = await tab.evaluate(() => {
+      const steps = [...document.querySelectorAll('.approach__step')];
+      return steps.map((step) => {
+        const dot = getComputedStyle(step, '::before');
+        const box = step.getBoundingClientRect();
+        const dotCentre =
+          box.top + parseFloat(dot.insetBlockStart) + parseFloat(dot.height) / 2;
+        const range = document.createRange();
+        range.setStart(step.firstChild, 0);
+        range.setEnd(step.firstChild, Math.min(3, step.firstChild.length));
+        const line = range.getBoundingClientRect();
+        return Math.abs(dotCentre - (line.top + line.height / 2));
+      });
+    });
+    const worstDrift = Math.max(...drift);
+
+    const fills = before.progress === 0 && during.progress > 0 && after.progress === 1;
+    const dotsFollow = before.reached === 0 && after.reached === drift.length;
+    const aligned = worstDrift <= 4;
+    const ok = fills && dotsFollow && aligned && drift.length >= 2;
+
+    console.log(
+      `  ${ok ? '✓' : '✗'} ${path} — ${drift.length} steps, progress ` +
+        `${before.progress}→${during.progress.toFixed(2)}→${after.progress}, ` +
+        `dots ${before.reached}→${after.reached}, drift ${worstDrift.toFixed(1)}px`,
+    );
+    if (!ok) {
+      failures.push(
+        `${path} reading spine: fills=${fills} dots=${dotsFollow} aligned=${aligned} (${worstDrift.toFixed(1)}px)`,
+      );
+    }
+    await tab.close();
+  }
+
+  /* Without scripting the spine has to be drawn complete, not left empty. */
+  const plain = await browser.newContext({ javaScriptEnabled: false });
+  const tab = await plain.newPage();
+  await tab.goto(`${origin}/zh/about`, { waitUntil: 'load' });
+  const settled = await tab.evaluate(() => {
+    const dot = getComputedStyle(document.querySelector('.approach__step'), '::before');
+    return {
+      clip: getComputedStyle(document.querySelector('.approach'), '::after').clipPath,
+      filled: dot.backgroundColor !== 'rgba(0, 0, 0, 0)' && dot.backgroundColor !== 'transparent',
+    };
+  });
+  const plainOk = settled.clip === 'none' && settled.filled;
+  console.log(`  ${plainOk ? '✓' : '✗'} spine drawn complete without scripting (clip ${settled.clip})`);
+  if (!plainOk) failures.push('reading spine is not drawn complete without JavaScript');
+  await plain.close();
+}
+
 console.log('\n── Document structure ───────────────────────────────────');
 for (const page of PAGES.filter((p) => p.path !== '/')) {
   const tab = await browser.newPage({ viewport: { width: 1280, height: 900 } });

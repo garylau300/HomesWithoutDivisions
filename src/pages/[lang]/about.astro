@@ -10,6 +10,29 @@ export const getStaticPaths = (() =>
 const locale = Astro.params.lang as Locale;
 const t = useTranslations(locale);
 const about = t.about;
+
+/*
+ * The approach section is an argument that lands on an invitation: its last
+ * paragraph stops explaining and addresses the reader directly ("We hope that
+ * whoever you are reading this…"). So it steps off the spine and becomes the
+ * panel carrying the call to action, while the paragraphs before it are the
+ * reasoning the spine runs through. Sliced rather than indexed by 3, so the
+ * split still holds if the section grows another paragraph.
+ */
+const capability = about.capability;
+const approachSteps = capability.body.slice(0, -1);
+const approachClose = capability.body[capability.body.length - 1];
+
+/*
+ * The project's three-colour signature, in the order it appears everywhere else
+ * (communication, terms, solution — the hero bars, the cards, the diagram).
+ * Cycled, so the spine keeps its rhythm at any number of paragraphs.
+ */
+const APPROACH_ACCENTS = [
+  'var(--accent-communication)',
+  'var(--accent-terms)',
+  'var(--accent-solution)',
+];
 ---
 
 <BaseLayout
@@ -31,19 +54,39 @@ const about = t.about;
   <section class="section capability" aria-labelledby="capability-heading">
     <div class="container container--narrow">
       <header class="section-head" data-reveal>
-        <p class="eyebrow">{about.capability.eyebrow}</p>
-        <h2 id="capability-heading">{about.capability.heading}</h2>
+        <p class="eyebrow">{capability.eyebrow}</p>
+        <h2 id="capability-heading">{capability.heading}</h2>
       </header>
 
-      <div class="prose capability__body" data-reveal>
-        {about.capability.body.map((paragraph) => <p>{paragraph}</p>)}
+      {/*
+        * The paragraphs stay paragraphs — no list markup — so this still reads
+        * as continuous prose to a screen reader. The spine is drawn entirely
+        * from pseudo-elements, which assistive technology never sees, and the
+        * reading progress it shows is already obvious to anyone who can see
+        * where they are on the page.
+        */}
+      <div class="approach" data-approach data-reveal>
+        {
+          approachSteps.map((paragraph, index) => (
+            <p
+              class="approach__step"
+              data-approach-step
+              style={`--step-accent: ${APPROACH_ACCENTS[index % APPROACH_ACCENTS.length]};`}
+            >
+              {paragraph}
+            </p>
+          ))
+        }
       </div>
 
-      <p class="capability__cta" data-reveal>
-        <a class="button" href={`${localeHref(locale)}#resources`}>
-          {about.capability.resourcesCta}
-        </a>
-      </p>
+      <div class="approach__close" data-reveal>
+        <p class="approach__close-text">{approachClose}</p>
+        <p class="capability__cta">
+          <a class="button" href={`${localeHref(locale)}#resources`}>
+            {capability.resourcesCta}
+          </a>
+        </p>
+      </div>
     </div>
   </section>
   <!-- ===== Mission ======================================================= -->
@@ -91,6 +134,61 @@ const about = t.about;
   </section>
 
 </BaseLayout>
+
+<script>
+  // Fills the approach section's spine as the reader moves through it.
+  const approach = document.querySelector<HTMLElement>('[data-approach]');
+
+  if (approach) {
+    const steps = Array.from(
+      approach.querySelectorAll<HTMLElement>('[data-approach-step]'),
+    );
+
+    /** The spine complete: what a reader sees without scripting, too. */
+    const settle = () => {
+      approach.style.setProperty('--read-progress', '1');
+      for (const step of steps) step.classList.add('is-reached');
+    };
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      settle();
+    } else {
+      let queued = false;
+
+      const apply = () => {
+        queued = false;
+        const rect = approach.getBoundingClientRect();
+        if (rect.height === 0) return;
+
+        /*
+         * Progress is measured against a line a little below the middle of the
+         * viewport rather than its top edge: the rail should fill roughly where
+         * the eye is, not a screen ahead of it.
+         */
+        const line = window.innerHeight * 0.62;
+        const progress = Math.min(1, Math.max(0, (line - rect.top) / rect.height));
+        approach.style.setProperty('--read-progress', progress.toFixed(4));
+
+        for (const step of steps) {
+          step.classList.toggle(
+            'is-reached',
+            step.getBoundingClientRect().top <= line,
+          );
+        }
+      };
+
+      const onScroll = () => {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(apply);
+      };
+
+      apply();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+    }
+  }
+</script>
 
 <style>
   /* ---- Hero ---------------------------------------------------------------- */
@@ -198,10 +296,129 @@ const about = t.about;
     background: color-mix(in srgb, var(--c-opal) 26%, var(--page));
   }
 
-  /* ---- Capability ---------------------------------------------------------- */
+  /* ---- Capability — the approach, as a reading spine ------------------------ */
 
-  .capability__body p {
+  /*
+   * A rail down the left of the prose, with a dot beside each paragraph. It
+   * fills in the three brand colours as the reader moves through the section,
+   * so a dense passage of theory shows its own length and how far into it you
+   * are. Nothing is hidden behind it: every word is present and readable with
+   * the spine drawn, empty, or absent entirely.
+   */
+  .approach {
+    /* Centre of the rail, and the room the rail and its dots need beside the text. */
+    --rail-x: 0.5rem;
+    --rail-inset: 2.5rem;
+    --dot-size: 0.875rem;
+    /*
+     * Vertical centre of a paragraph's first line, so the dots sit level with
+     * the text rather than with the box. Half a line box of body type: --step-0
+     * runs 1rem–1.0625rem at --leading-body, so half is 0.825rem–0.877rem. Held
+     * as a plain length on purpose — a clamp() substituted into the calc()s
+     * below is what collapsed the header logo to nothing once before.
+     */
+    --dot-centre: 0.85rem;
+
+    position: relative;
+    display: grid;
+    gap: var(--space-xl);
+    padding-inline-start: var(--rail-inset);
+  }
+
+  /* The track, and over it the read portion. Insets end the rail at the dots. */
+  .approach::before,
+  .approach::after {
+    content: '';
+    position: absolute;
+    inset-block: var(--dot-centre);
+    inset-inline-start: calc(var(--rail-x) - 1px);
+    width: 2px;
+    border-radius: var(--radius-pill);
+    /*
+     * The last paragraph runs on past its own dot, so the rail would otherwise
+     * stop dead partway down it. Fading the tail makes it read as the argument
+     * carrying on into the panel below rather than as an overshoot. Track and
+     * fill are faded together, so it looks the same empty or complete.
+     */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
+  }
+
+  .approach::before {
+    background: var(--rule);
+  }
+
+  .approach::after {
+    background: linear-gradient(
+      180deg,
+      var(--accent-communication) 0%,
+      var(--accent-terms) 50%,
+      var(--accent-solution) 100%
+    );
+  }
+
+  .approach__step {
+    position: relative;
     max-width: var(--measure);
+  }
+
+  /* The dot, sitting back out in the rail column and centred on the rail. */
+  .approach__step::before {
+    content: '';
+    position: absolute;
+    inset-block-start: calc(var(--dot-centre) - var(--dot-size) / 2);
+    inset-inline-start: calc(var(--rail-x) - var(--dot-size) / 2 - var(--rail-inset));
+    width: var(--dot-size);
+    height: var(--dot-size);
+    background: var(--step-accent);
+    border: 2px solid var(--step-accent);
+    border-radius: 50%;
+    transition:
+      background-color var(--dur) var(--ease-out),
+      border-color var(--dur) var(--ease-out),
+      transform var(--dur) var(--ease-spring);
+  }
+
+  /*
+   * Drawn complete by default, exactly like the pillar rules on the landing
+   * page: only once JavaScript is running does the spine start empty and fill
+   * with the reading. Without it, nothing is missing — the rail is simply done.
+   */
+  :global(html.js) .approach::after {
+    clip-path: inset(0 0 calc((1 - var(--read-progress, 0)) * 100%) 0);
+  }
+
+  :global(html.js) .approach__step::before {
+    background: var(--page);
+    border-color: var(--rule-strong);
+  }
+
+  :global(html.js) .approach__step.is-reached::before {
+    background: var(--step-accent);
+    border-color: var(--step-accent);
+    transform: scale(1.15);
+  }
+
+  /* ---- Capability — the closing invitation ---------------------------------- */
+
+  .approach__close {
+    margin-block-start: var(--space-xl);
+    /*
+     * Indented by the rail's inset less the panel's own padding, so the text
+     * inside starts on exactly the same line as the paragraphs above it — the
+     * panel steps off the spine without stepping out of the column.
+     */
+    margin-inline-start: var(--space-s);
+    padding: var(--space-l) var(--space-m);
+    background: var(--accent-solution-tint);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-l);
+  }
+
+  .approach__close-text {
+    max-width: var(--measure);
+    font-size: var(--step-1);
+    line-height: var(--leading-snug);
   }
 
   .capability__cta {
