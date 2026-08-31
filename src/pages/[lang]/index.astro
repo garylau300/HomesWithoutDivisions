@@ -131,7 +131,13 @@ const t = useTranslations(locale);
     position: relative;
     /* Clips the washes' horizontal bleed; body's overflow-x does not reach them. */
     overflow: hidden;
-    padding-block: var(--space-xl) var(--space-2xl);
+    /*
+     * Bottom padding is deliberately smaller than the top: the resources
+     * section right below is what the two buttons above point at, and the
+     * closer they read together the more the "See the three resources" button
+     * feels like it leads somewhere rather than into empty space.
+     */
+    padding-block: var(--space-xl) var(--space-l);
   }
 
   .hero__decor {
@@ -397,6 +403,8 @@ const t = useTranslations(locale);
   /* ---- Resources ----------------------------------------------------------- */
 
   .resources {
+    /* Narrower than the .section default, to sit close under the hero's buttons. */
+    padding-block-start: var(--space-l);
     background: linear-gradient(
       180deg,
       var(--page) 0%,
