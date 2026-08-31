@@ -1,0 +1,24 @@
+---
+/**
+ * Renders a copy string, turning `**…**` spans into <strong>.
+ *
+ * The emphasis lives in the content files beside the words it marks, which is
+ * where anyone editing or translating the copy will look for it — rather than
+ * in a separate list of phrases that silently stops matching the moment a
+ * sentence is reworded.
+ *
+ * Nothing is injected as HTML: the parts are rendered as ordinary text nodes,
+ * so a stray `<` in the copy stays a `<` and no markup can arrive through the
+ * content files. `**` is the only thing this understands.
+ */
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+
+/* Odd indices fall between a pair of markers, so those are the emphasised runs. */
+const parts = text.split('**');
+---
+
+{parts.map((part, index) => (index % 2 === 1 ? <strong>{part}</strong> : part))}

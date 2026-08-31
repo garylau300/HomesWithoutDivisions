@@ -110,6 +110,12 @@ PALETTE.footer = mix(PALETTE.jet, PALETTE.floral, 7);
 /* The card headers use the pairing colours lifted halfway to Floral White. */
 PALETTE.opalTint = mix(PALETTE.opal, PALETTE.floral, 50);
 PALETTE.pinkTint = mix(PALETTE.palePink, PALETTE.floral, 50);
+/*
+ * The header's nav pill is a neutral wash rather than a brand tint, so it reads
+ * the same over the hero and over plain page. A translucent jet over the page
+ * composites to exactly the same colour as mixing it in, so this reuses mix().
+ */
+PALETTE.navPill = mix(PALETTE.jet, PALETTE.floral, 12);
 
 /**
  * Every foreground/background pair the site renders where the contrast has to
@@ -127,6 +133,7 @@ const PAIRS = [
   { name: 'muted text on the light pink card head', fg: PALETTE.jet, bg: PALETTE.pinkTint, min: 4.5 },
   { name: 'text on the light mint card head', fg: PALETTE.eerie, bg: PALETTE.opalTint, min: 4.5 },
   { name: 'muted text on the light mint card head', fg: PALETTE.jet, bg: PALETTE.opalTint, min: 4.5 },
+  { name: 'nav link on the header pill', fg: PALETTE.eerie, bg: PALETTE.navPill, min: 4.5 },
   { name: 'text on Cyber Yellow', fg: PALETTE.eerie, bg: PALETTE.yellow, min: 4.5 },
   { name: 'text on Coral', fg: PALETTE.eerie, bg: PALETTE.coral, min: 4.5 },
   { name: 'text on Keppel', fg: PALETTE.eerie, bg: PALETTE.keppel, min: 4.5 },
@@ -400,6 +407,46 @@ console.log('\n── Header lockup ──────────────�
     if (!ok) failures.push(`header lockup wrong at ${width}px (top ${top.h}px, scrolled ${scrolled.h}px)`);
   }
   await tab.close();
+}
+
+console.log('\n── No coral surfaces (About) ────────────────────────────');
+{
+  /*
+   * The About page carries no coral or pink surface: not the hero wash, not the
+   * closing panel, not the nav pill in the bar above it. Coral stays a line —
+   * the spine's dots and rail, the venn circles, the current-page underline —
+   * which are drawn as pseudo-element backgrounds and SVG fills, neither of
+   * which this reads. Only real elements' own background-colour is checked.
+   *
+   * Warm-red is separated from Cyber Yellow by the gap between the green and
+   * blue channels: pink and coral keep them level (255,90,90 / 255,218,218),
+   * yellow drives them far apart (255,211,51). Floral White and the footer
+   * band sit inside the tolerance, as they should — they are warm neutrals.
+   */
+  for (const path of ['/zh/about', '/en/about']) {
+    const tab = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await tab.goto(`${origin}${path}`, { waitUntil: 'networkidle' });
+    const offenders = await tab.evaluate(() =>
+      [...document.querySelectorAll('*')]
+        .map((el) => {
+          const bg = getComputedStyle(el).backgroundColor;
+          const m = bg.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)$/);
+          if (!m) return null;
+          const [r, g, b] = [Number(m[1]), Number(m[2]), Number(m[3])];
+          const alpha = m[4] === undefined ? 1 : Number(m[4]);
+          const box = el.getBoundingClientRect();
+          const warmRed = r - g > 12 && Math.abs(g - b) < 25;
+          if (!warmRed || alpha < 0.05 || box.width * box.height < 400) return null;
+          return `${el.tagName.toLowerCase()}.${el.className || '(none)'} → ${bg}`;
+        })
+        .filter(Boolean),
+    );
+    const ok = offenders.length === 0;
+    console.log(`  ${ok ? '✓' : '✗'} ${path} — ${offenders.length} coral/pink surface(s)`);
+    for (const o of offenders) console.log(`      ${o}`);
+    if (!ok) failures.push(`${path} has coral/pink surfaces: ${offenders.join('; ')}`);
+    await tab.close();
+  }
 }
 
 console.log('\n── Reading spine (About) ────────────────────────────────');

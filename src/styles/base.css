@@ -151,6 +151,16 @@ select {
   max-width: var(--measure);
 }
 
+/*
+ * Emphasis inside body copy. Pinned rather than left to the browser's default
+ * `bolder`, which resolves against whatever weight it inherits and so lands
+ * differently inside a heading than inside a paragraph. 700 is the weight
+ * Quire Sans Bold actually covers.
+ */
+strong {
+  font-weight: 700;
+}
+
 .visually-hidden {
   position: absolute !important;
   width: 1px;

@@ -43,3 +43,14 @@ export function localeHref(locale: Locale, page = ''): string {
 export function format(template: string, values: Record<string, string>): string {
   return template.replace(/\{(\w+)\}/g, (match, key: string) => values[key] ?? match);
 }
+
+/**
+ * Drops the `**` emphasis markers from a copy string.
+ *
+ * Anywhere copy is used as plain text rather than rendered through
+ * <Emphasis> — a meta description, an alt attribute, a page title — the
+ * markers have to come off, or they ship to search results verbatim.
+ */
+export function plain(text: string): string {
+  return text.replaceAll('**', '');
+}

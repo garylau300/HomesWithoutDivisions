@@ -253,14 +253,19 @@ const links = [
       color var(--dur-fast) var(--ease-out);
   }
 
+  /*
+   * A neutral wash rather than a brand tint: the bar sits over the hero's own
+   * washes on the landing page and over plain page elsewhere, and a colourless
+   * darkening reads the same on both.
+   */
   .site-header__link:hover {
-    background: var(--c-pale-pink);
+    background: color-mix(in srgb, var(--c-jet) 8%, transparent);
     color: var(--c-eerie);
   }
 
   /* The current page is underlined as well as tinted, so it is not colour alone. */
   .site-header__link[aria-current='page'] {
-    background: var(--c-pale-pink);
+    background: color-mix(in srgb, var(--c-jet) 12%, transparent);
     text-decoration: underline;
     text-decoration-color: var(--c-coral);
     text-decoration-thickness: 2px;

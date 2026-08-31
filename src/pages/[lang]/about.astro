@@ -2,7 +2,8 @@
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PillarDiagram from '../../components/PillarDiagram.astro';
-import { LOCALES, localeHref, useTranslations, type Locale } from '../../lib/i18n';
+import Emphasis from '../../components/Emphasis.astro';
+import { LOCALES, localeHref, plain, useTranslations, type Locale } from '../../lib/i18n';
 
 export const getStaticPaths = (() =>
   LOCALES.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
@@ -39,7 +40,7 @@ const APPROACH_ACCENTS = [
   locale={locale}
   page="/about"
   title={about.title}
-  description={about.hero.lead}
+  description={plain(about.hero.lead)}
 >
   <!-- ===== Hero ========================================================== -->
   <section class="about-hero">
@@ -73,14 +74,14 @@ const APPROACH_ACCENTS = [
               data-approach-step
               style={`--step-accent: ${APPROACH_ACCENTS[index % APPROACH_ACCENTS.length]};`}
             >
-              {paragraph}
+              <Emphasis text={paragraph} />
             </p>
           ))
         }
       </div>
 
       <div class="approach__close" data-reveal>
-        <p class="approach__close-text">{approachClose}</p>
+        <p class="approach__close-text"><Emphasis text={approachClose} /></p>
         <p class="capability__cta">
           <a class="button" href={`${localeHref(locale)}#resources`}>
             {capability.resourcesCta}
@@ -98,7 +99,11 @@ const APPROACH_ACCENTS = [
       </header>
 
       <div class="prose" data-reveal>
-        {about.mission.body.map((paragraph) => <p>{paragraph}</p>)}
+        {about.mission.body.map((paragraph) => (
+          <p>
+            <Emphasis text={paragraph} />
+          </p>
+        ))}
       </div>
 
       <h3 class="mission__methods-heading" data-reveal>{about.mission.methodsHeading}</h3>
@@ -195,9 +200,10 @@ const APPROACH_ACCENTS = [
 
   .about-hero {
     padding-block: var(--space-2xl);
+    /* The mint tint, not the pink one: no coral surfaces anywhere on this page. */
     background: linear-gradient(
       180deg,
-      color-mix(in srgb, var(--c-pale-pink) 55%, var(--page)) 0%,
+      var(--accent-communication-tint) 0%,
       var(--page) 100%
     );
   }
@@ -410,7 +416,7 @@ const APPROACH_ACCENTS = [
      */
     margin-inline-start: var(--space-s);
     padding: var(--space-l) var(--space-m);
-    background: var(--accent-solution-tint);
+    background: var(--accent-communication-tint);
     border: 1px solid var(--rule);
     border-radius: var(--radius-l);
   }
