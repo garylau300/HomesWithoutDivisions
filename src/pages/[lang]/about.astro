@@ -51,7 +51,55 @@ const APPROACH_ACCENTS = [
     </div>
   </section>
 
-  <!-- ===== The capability approach — leads the page ====================== -->
+  <!-- ===== The three pillars — leads the page ========================== -->
+  <section class="section pillars-section" aria-labelledby="pillars-heading">
+    <div class="container">
+      <header class="section-head" data-reveal>
+        <p class="eyebrow">{about.pillars.eyebrow}</p>
+        <h2 id="pillars-heading">{about.pillars.heading}</h2>
+        <p class="section-head__lead">{about.pillars.lead}</p>
+      </header>
+
+      <div data-reveal>
+        <PillarDiagram locale={locale} />
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Mission ======================================================= -->
+  <section class="section mission" aria-labelledby="mission-heading">
+    <div class="container container--narrow">
+      <header class="section-head" data-reveal>
+        <p class="eyebrow">{about.mission.eyebrow}</p>
+        <h2 id="mission-heading">{about.mission.heading}</h2>
+      </header>
+
+      <div class="prose" data-reveal>
+        {about.mission.body.map((paragraph) => (
+          <p>
+            <Emphasis text={paragraph} />
+          </p>
+        ))}
+      </div>
+
+      <h3 class="mission__methods-heading" data-reveal>{about.mission.methodsHeading}</h3>
+      <ul class="mission__methods">
+        {
+          about.mission.methods.map((method, index) => (
+            <li class="mission__method" data-reveal style={`--reveal-delay: ${index * 110}ms;`}>
+              <span class="mission__method-marker" aria-hidden="true">
+                {index + 1}
+              </span>
+              <h4 class="mission__method-name">{method.name}</h4>
+              <p class="mission__method-body">{method.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== The capability approach — closes the page ===================== -->
   <section class="section capability" aria-labelledby="capability-heading">
     <div class="container container--narrow">
       <header class="section-head" data-reveal>
@@ -90,54 +138,6 @@ const APPROACH_ACCENTS = [
       </div>
     </div>
   </section>
-  <!-- ===== Mission ======================================================= -->
-  <section class="section mission" aria-labelledby="mission-heading">
-    <div class="container container--narrow">
-      <header class="section-head" data-reveal>
-        <p class="eyebrow">{about.mission.eyebrow}</p>
-        <h2 id="mission-heading">{about.mission.heading}</h2>
-      </header>
-
-      <div class="prose" data-reveal>
-        {about.mission.body.map((paragraph) => (
-          <p>
-            <Emphasis text={paragraph} />
-          </p>
-        ))}
-      </div>
-
-      <h3 class="mission__methods-heading" data-reveal>{about.mission.methodsHeading}</h3>
-      <ul class="mission__methods">
-        {
-          about.mission.methods.map((method, index) => (
-            <li class="mission__method" data-reveal style={`--reveal-delay: ${index * 110}ms;`}>
-              <span class="mission__method-marker" aria-hidden="true">
-                {index + 1}
-              </span>
-              <h4 class="mission__method-name">{method.name}</h4>
-              <p class="mission__method-body">{method.body}</p>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
-
-  <!-- ===== The three pillars ============================================= -->
-  <section class="section pillars-section" aria-labelledby="pillars-heading">
-    <div class="container">
-      <header class="section-head" data-reveal>
-        <p class="eyebrow">{about.pillars.eyebrow}</p>
-        <h2 id="pillars-heading">{about.pillars.heading}</h2>
-        <p class="section-head__lead">{about.pillars.lead}</p>
-      </header>
-
-      <div data-reveal>
-        <PillarDiagram locale={locale} />
-      </div>
-    </div>
-  </section>
-
 </BaseLayout>
 
 <script>
