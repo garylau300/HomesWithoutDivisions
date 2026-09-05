@@ -30,7 +30,10 @@ const links = [
   <div class="site-header__inner container">
     <Wrapper class="site-header__title">
       <a class="site-header__logo" href={localeHref(locale)} aria-label={`${logoAlt} — ${t.nav.home}`}>
-      {/* The full lockup at every width; the bar reflows to two rows to keep it. */}
+      {/*
+        * The full lockup at every width; the bar reflows to two rows to keep it.
+        * It is also the largest paint on every page, so it is fetched as such.
+        */}
       <img
         class="site-header__lockup"
         src="/brand/hwd-lockup-660.png"
@@ -38,6 +41,7 @@ const links = [
         width="660"
         height="128"
         decoding="async"
+        fetchpriority="high"
       />
       </a>
     </Wrapper>
@@ -64,33 +68,9 @@ const links = [
 </header>
 
 <script>
-  // Condense the header once the page has scrolled past the hero's top edge.
-  const header = document.querySelector<HTMLElement>('[data-site-header]');
-  if (header) {
-    /*
-     * Drives a 0→1 progress value that the CSS interpolates the logo size from,
-     * so the lockup shrinks smoothly with the scroll rather than snapping between
-     * two sizes. Reads are batched into a frame to keep it off the scroll thread.
-     */
-    const RUNWAY = 220;
-    let queued = false;
+  import { initHeader } from '../lib/client/header';
 
-    const apply = () => {
-      queued = false;
-      const progress = Math.min(1, Math.max(0, window.scrollY / RUNWAY));
-      header.style.setProperty('--scroll-progress', progress.toFixed(4));
-      header.classList.toggle('is-condensed', window.scrollY > 24);
-    };
-
-    const onScroll = () => {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(apply);
-    };
-
-    apply();
-    window.addEventListener('scroll', onScroll, { passive: true });
-  }
+  initHeader();
 </script>
 
 <style>
@@ -258,9 +238,11 @@ const links = [
    * washes on the landing page and over plain page elsewhere, and a colourless
    * darkening reads the same on both.
    */
-  .site-header__link:hover {
-    background: color-mix(in srgb, var(--c-jet) 8%, transparent);
-    color: var(--c-eerie);
+  @media (hover: hover) {
+    .site-header__link:hover {
+      background: color-mix(in srgb, var(--c-jet) 8%, transparent);
+      color: var(--c-eerie);
+    }
   }
 
   /* The current page is underlined as well as tinted, so it is not colour alone. */

@@ -229,8 +229,16 @@ const group = deliverable.id;
     color: var(--c-floral);
   }
 
-  .segmented input:not(:checked) + .segmented__option:hover {
-    color: var(--c-coral);
+  /*
+   * A neutral wash, not Coral text. Coral on this track is 2.97:1 — below the
+   * 4.5:1 an interface label needs — and a state that only exists under the
+   * pointer is one an automated audit never sees.
+   */
+  @media (hover: hover) {
+    .segmented input:not(:checked) + .segmented__option:hover {
+      background: color-mix(in srgb, var(--c-jet) 9%, transparent);
+      color: var(--ink);
+    }
   }
 
   .segmented input:focus-visible + .segmented__option {
@@ -265,9 +273,20 @@ const group = deliverable.id;
       box-shadow var(--dur-fast) var(--ease-out);
   }
 
-  a.picker__action:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-m);
+  @media (hover: hover) {
+    a.picker__action:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-m);
+    }
+  }
+
+  /* The tap's own acknowledgement, for the touch users hover never reaches. */
+  a.picker__action:active {
+    transform: scale(0.97);
+  }
+
+  .segmented input:not(:checked) + .segmented__option:active {
+    background: color-mix(in srgb, var(--c-jet) 14%, transparent);
   }
 
   .picker__action--soon {

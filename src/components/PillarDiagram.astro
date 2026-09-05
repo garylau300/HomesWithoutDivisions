@@ -191,13 +191,18 @@ const ordered = PILLARS.map((pillar, index) => ({
   }
 
   /* Pointing at or focusing a pillar lifts its circle out of the stack. */
-  .venn:has(.venn__item[data-pillar='communication']:hover) .venn__circle--communication,
   .venn:has(.venn__item[data-pillar='communication']:focus-within) .venn__circle--communication,
-  .venn:has(.venn__item[data-pillar='terms']:hover) .venn__circle--terms,
   .venn:has(.venn__item[data-pillar='terms']:focus-within) .venn__circle--terms,
-  .venn:has(.venn__item[data-pillar='solution']:hover) .venn__circle--solution,
   .venn:has(.venn__item[data-pillar='solution']:focus-within) .venn__circle--solution {
     transform: scale(1.06);
+  }
+
+  @media (hover: hover) {
+    .venn:has(.venn__item[data-pillar='communication']:hover) .venn__circle--communication,
+    .venn:has(.venn__item[data-pillar='terms']:hover) .venn__circle--terms,
+    .venn:has(.venn__item[data-pillar='solution']:hover) .venn__circle--solution {
+      transform: scale(1.06);
+    }
   }
 
   /* ---- List ---------------------------------------------------------------- */
@@ -221,10 +226,16 @@ const ordered = PILLARS.map((pillar, index) => ({
       box-shadow var(--dur) var(--ease-out);
   }
 
-  .venn__item:hover,
   .venn__item:focus-within {
     transform: translateX(4px);
     box-shadow: var(--shadow-m);
+  }
+
+  @media (hover: hover) {
+    .venn__item:hover {
+      transform: translateX(4px);
+      box-shadow: var(--shadow-m);
+    }
   }
 
   .venn__numeral-badge {

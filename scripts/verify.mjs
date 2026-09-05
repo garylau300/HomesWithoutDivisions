@@ -12,6 +12,7 @@
  * Exits non-zero if anything fails, so it can gate a deploy.
  */
 import { readFileSync, mkdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import { join, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,6 +23,28 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
 const shots = join(root, 'screenshots');
 const axeSource = readFileSync(join(root, 'node_modules/axe-core/axe.min.js'), 'utf8');
+
+/*
+ * The production response headers, read from vercel.json rather than restated
+ * here, so the whole verification runs under the policy the site actually ships
+ * — a Content-Security-Policy that blocks something is then a failing check
+ * rather than a surprise after deploy.
+ */
+const vercelConfig = JSON.parse(readFileSync(join(root, 'vercel.json'), 'utf8'));
+const siteHeaders = Object.fromEntries(
+  (vercelConfig.headers ?? [])
+    .filter((rule) => rule.source === '/(.*)')
+    .flatMap((rule) => rule.headers)
+    .map((h) => [h.key, h.value]),
+);
+const csp = siteHeaders['Content-Security-Policy'] ?? '';
+const cspDirective = (name) => {
+  const found = csp
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part === name || part.startsWith(`${name} `));
+  return found ? found.slice(name.length).trim().split(/\s+/).filter(Boolean) : [];
+};
 
 const PAGES = [
   { path: '/zh', name: 'zh-home' },
@@ -53,7 +76,10 @@ function serve() {
     for (const candidate of candidates) {
       try {
         const body = readFileSync(candidate);
-        res.writeHead(200, { 'Content-Type': MIME[extname(candidate)] ?? 'application/octet-stream' });
+        res.writeHead(200, {
+          'Content-Type': MIME[extname(candidate)] ?? 'application/octet-stream',
+          ...siteHeaders,
+        });
         res.end(body);
         return;
       } catch {
@@ -204,7 +230,14 @@ for (const page of PAGES) {
   await tab.goto(`${origin}${page.path}`, { waitUntil: 'networkidle' });
   // The root URL redirects to a language; wait for that to land.
   await tab.waitForLoadState('networkidle');
-  await tab.addScriptTag({ content: axeSource });
+  /*
+   * Evaluated rather than added as a <script> tag: the pages are served under
+   * the production Content-Security-Policy, which refuses inline scripts, and
+   * refusing an injected one is the policy working. Evaluating over the
+   * DevTools protocol runs the auditor without punching a hole in the policy
+   * the audit is meant to run under.
+   */
+  await tab.evaluate(axeSource);
   const results = await tab.evaluate(async () =>
     // @ts-expect-error axe is injected above
     await window.axe.run(document, {
@@ -407,6 +440,112 @@ console.log('\n── Header lockup ──────────────�
     if (!ok) failures.push(`header lockup wrong at ${width}px (top ${top.h}px, scrolled ${scrolled.h}px)`);
   }
   await tab.close();
+}
+
+console.log('\n── Print ────────────────────────────────────────────────');
+{
+  /*
+   * These are documents people print. Content is hidden ahead of being revealed
+   * on scroll, and print does not scroll — so without a print rule for it, a
+   * page printed before the reader has scrolled through comes out blank where
+   * most of the text should be. Silent, and severe on a page a caseworker is
+   * handing to someone, so it is checked rather than remembered.
+   */
+  for (const page of PAGES.filter((p) => p.path !== '/')) {
+    const tab = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await tab.goto(`${origin}${page.path}`, { waitUntil: 'networkidle' });
+    await tab.emulateMedia({ media: 'print' });
+    await tab.waitForTimeout(200);
+    const state = await tab.evaluate(() => {
+      const revealed = [...document.querySelectorAll('[data-reveal]')];
+      const header = document.querySelector('.site-header');
+      const lockup = document.querySelector('.site-header__lockup');
+      return {
+        blank: revealed.filter((el) => getComputedStyle(el).opacity === '0').length,
+        total: revealed.length,
+        sticky: header ? getComputedStyle(header).position === 'sticky' : false,
+        lockup: lockup ? getComputedStyle(lockup).display !== 'none' : false,
+        text: document.body.innerText.replace(/\s+/g, ' ').trim().length,
+      };
+    });
+    const ok = state.blank === 0 && !state.sticky && state.lockup && state.text > 400;
+    console.log(
+      `  ${ok ? '✓' : '✗'} ${page.path} — ${state.total - state.blank}/${state.total} blocks print, ` +
+        `${state.text} chars, header unstuck: ${!state.sticky}, lockup kept: ${state.lockup}`,
+    );
+    if (!ok) failures.push(`${page.path} does not print correctly (${state.blank} blank block(s))`);
+    await tab.close();
+  }
+}
+
+console.log('\n── Security headers ─────────────────────────────────────');
+{
+  /*
+   * The policy is only worth having if it is the one the browser gets, so this
+   * checks the shipped vercel.json rather than an idea of it, and then loads
+   * every page under it and listens for the browser actually refusing
+   * something. A CSP that quietly blocks the site is the failure mode this
+   * exists to catch.
+   */
+  const scriptSrc = cspDirective('script-src');
+  const unsafe = scriptSrc.filter((v) => v === "'unsafe-inline'" || v === "'unsafe-eval'");
+  const scriptOk = scriptSrc.includes("'self'") && unsafe.length === 0;
+  console.log(
+    `  ${scriptOk ? '✓' : '✗'} script-src is 'self' plus hashes, no unsafe-inline/eval` +
+      (unsafe.length ? ` — found ${unsafe.join(', ')}` : ''),
+  );
+  if (!scriptOk) failures.push(`script-src is weak: ${scriptSrc.join(' ')}`);
+
+  /* Every inline script the build emits must be covered by a pinned hash. */
+  const inlineHashes = new Map();
+  for (const page of PAGES) {
+    const file = join(dist, page.path === '/' ? 'index.html' : `${page.path}/index.html`);
+    const html = readFileSync(file, 'utf8');
+    for (const match of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+      const hash = `'sha256-${createHash('sha256').update(match[1], 'utf8').digest('base64')}'`;
+      if (!inlineHashes.has(hash)) inlineHashes.set(hash, []);
+      inlineHashes.get(hash).push(page.path);
+    }
+  }
+  const missing = [...inlineHashes.keys()].filter((h) => !scriptSrc.includes(h));
+  console.log(
+    `  ${missing.length === 0 ? '✓' : '✗'} ${inlineHashes.size} inline script(s) in the build, all pinned in vercel.json`,
+  );
+  for (const hash of missing) {
+    console.log(`      unpinned (${inlineHashes.get(hash).join(', ')}): ${hash}`);
+    failures.push(`inline script not pinned in the CSP: ${hash}`);
+  }
+  /* A hash left behind after a script changed is dead weight and hides drift. */
+  const stale = scriptSrc.filter((v) => v.startsWith("'sha256-") && !inlineHashes.has(v));
+  console.log(`  ${stale.length === 0 ? '✓' : '✗'} no stale hashes left in the policy`);
+  if (stale.length) failures.push(`stale CSP hash(es): ${stale.join(', ')}`);
+
+  for (const key of ['X-Content-Type-Options', 'Referrer-Policy', 'X-Frame-Options',
+                     'Strict-Transport-Security', 'Permissions-Policy']) {
+    const present = Boolean(siteHeaders[key]);
+    console.log(`  ${present ? '✓' : '✗'} ${key}`);
+    if (!present) failures.push(`missing security header: ${key}`);
+  }
+
+  /* Now the real test: does anything on the page actually get refused? */
+  for (const page of PAGES) {
+    const tab = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await tab.addInitScript(() => {
+      window.__cspViolations = [];
+      document.addEventListener('securitypolicyviolation', (event) => {
+        window.__cspViolations.push(`${event.effectiveDirective} blocked ${String(event.blockedURI).slice(0, 60)}`);
+      });
+    });
+    await tab.goto(`${origin}${page.path}`, { waitUntil: 'networkidle' });
+    await tab.evaluate(() => window.scrollTo({ top: 1200, behavior: 'instant' }));
+    await tab.waitForTimeout(350);
+    const violations = await tab.evaluate(() => window.__cspViolations ?? []);
+    const unique = [...new Set(violations)];
+    console.log(`  ${unique.length === 0 ? '✓' : '✗'} ${page.path} — ${unique.length} CSP violation(s) in the browser`);
+    for (const v of unique) console.log(`      ${v}`);
+    if (unique.length) failures.push(`${page.path} triggers CSP violations: ${unique.join('; ')}`);
+    await tab.close();
+  }
 }
 
 console.log('\n── No coral surfaces (About) ────────────────────────────');

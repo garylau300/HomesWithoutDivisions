@@ -1,4 +1,6 @@
 @import './fonts.css';
+/* Last, so its @media print rules win on order where specificity ties. */
+@import './print.css';
 
 /* Base layer — reset, elements, layout primitives, motion utilities. */
 
@@ -15,6 +17,13 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  /*
+   * The header is sticky, so anything scrolled to would otherwise land beneath
+   * it. Set on the scroll container rather than on :target, because that also
+   * covers scrollIntoView() and the browser's own restore-on-back, not only
+   * fragment navigation.
+   */
+  scroll-padding-top: 6rem;
 }
 
 body {
@@ -91,6 +100,7 @@ select {
   color: inherit;
 }
 
+/* Belt and braces for browsers that honour scroll-margin but not scroll-padding. */
 :target {
   scroll-margin-top: 6rem;
 }
@@ -211,13 +221,25 @@ strong {
     box-shadow var(--dur-fast) var(--ease-out);
 }
 
-.button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-m);
+/*
+ * Gated on a device that can actually hover. On a touch screen :hover latches
+ * after a tap and stays until something else is tapped, so the effect sticks
+ * on whatever was last touched. Focus states are deliberately not gated.
+ */
+@media (hover: hover) {
+  .button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-m);
+  }
 }
 
+/*
+ * A pressed state, not just the hover lift cancelled. Touch has no hover to
+ * cancel, so without this a tap on a phone gives no acknowledgement at all
+ * between the press and the next page loading.
+ */
 .button:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.97);
 }
 
 .button--ghost {
@@ -226,8 +248,10 @@ strong {
   border-color: var(--rule-strong);
 }
 
-.button--ghost:hover {
-  border-color: var(--ink);
+@media (hover: hover) {
+  .button--ghost:hover {
+    border-color: var(--ink);
+  }
 }
 
 /* ---- Scroll reveal ------------------------------------------------------- */
@@ -248,6 +272,17 @@ strong {
 .js [data-reveal].is-revealed {
   opacity: 1;
   transform: none;
+}
+
+/*
+ * The failsafe. Same specificity as the rule above and placed after it, so it
+ * wins on order without !important. Content that was hidden in anticipation of
+ * a reveal is shown when that reveal never armed itself.
+ */
+.no-reveal [data-reveal] {
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 /* ---- Reduced motion ------------------------------------------------------ */

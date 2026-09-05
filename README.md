@@ -28,7 +28,7 @@ npm run dev        # http://localhost:4321
 npm run build      # static output in dist/
 npm run preview
 npm run check      # TypeScript and Astro diagnostics
-npm run verify     # accessibility, contrast, no-JS behaviour, screenshots
+npm run verify     # a11y, contrast, security headers, print, no-JS, screenshots
 npm run icons      # regenerate the PNG icons from public/favicon.svg
 ```
 
@@ -134,8 +134,13 @@ depends on colour alone.
 
 ### The logo
 
-`public/brand/hwd-lockup.png` is the official lockup, recovered at full
-resolution. `public/favicon.svg` is the house-and-heart mark rebuilt as vector
+`assets/brand/hwd-lockup.png` is the official lockup, recovered at full
+resolution. It sits outside `public/` on purpose: it is the master that
+`npm run icons` composites the header lockup and the Open Graph image from, and
+everything under `public/` is deployed whether a page references it or not — at
+278 KB it was a third of the build with nothing ever requesting it. The site
+serves `public/brand/hwd-lockup-660.png` instead. `public/favicon.svg` is the
+house-and-heart mark rebuilt as vector
 geometry — the pale lines are knockouts rather than white paint, so it stays
 correct on any background. Both follow the guide's rules: never stretched,
 outlined, recoloured, shadowed, rotated, or given a gradient.
@@ -152,6 +157,45 @@ Targets WCAG 2.2 AA, and `npm run verify` checks it rather than assuming it:
 Content is visible by default and the reveal animations are added only once
 JavaScript has marked the document, so nothing is ever hidden from a reader
 without it. All motion stops under `prefers-reduced-motion: reduce`.
+
+Because the page is hidden ahead of being revealed, a reveal that never runs
+would cost the reader the whole page. Two nets prevent that: the reveal shows
+everything rather than throwing, and the bootstrap in `BaseLayout.astro` shows
+the page anyway if the reveal never reports itself ready.
+
+## Security
+
+`npm run verify` serves the build behind the real `vercel.json` response
+headers, so every check above runs under the policy the site actually ships,
+and a Content-Security-Policy that blocks something is a failing check rather
+than a surprise after deploy. It also asserts the policy itself:
+
+- `script-src` is `'self'` plus pinned hashes — no `'unsafe-inline'`, no
+  `'unsafe-eval'`. Client scripts are emitted as files rather than inlined
+  (see `vite.build.assetsInlineLimit` in `astro.config.mjs`), which leaves only
+  the two `is:inline` bootstraps to pin.
+- every inline script in the build is covered by a hash in `vercel.json`, and
+  no stale hash is left behind. Change a bootstrap script without repinning it
+  and this check fails with the hash to paste in.
+- each page is loaded in a browser and must report zero CSP violations.
+
+`style-src` keeps `'unsafe-inline'` deliberately: the pillar accents and reveal
+delays are inline `style` attributes, which no hash can cover.
+
+One thing left as a judgement call rather than changed: Noto Sans TC is loaded
+from Google Fonts, so every visitor's IP reaches Google and the stylesheet is
+render-blocking. Chinese already falls back to PingFang HK and Microsoft
+JhengHei, so the link could simply be dropped — worth deciding deliberately
+rather than by default.
+
+## Print
+
+These are documents people print, so `src/styles/print.css` is not an
+afterthought — and `npm run verify` checks the printed page too. Content hidden
+ahead of a scroll reveal cannot be revealed by printing, so without a print
+rule a page printed before scrolling comes out blank where most of the text
+should be. The check asserts every block prints, the sticky header is unstuck,
+and the lockup stays so a printed sheet still says where it came from.
 
 ## Growing into the full Pocket Clinic
 

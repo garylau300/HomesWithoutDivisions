@@ -93,11 +93,23 @@ const number = String(deliverable.index).padStart(2, '0');
       border-color var(--dur) var(--ease-out);
   }
 
-  .card:hover,
   .card:focus-within {
     transform: translateY(-4px);
     border-color: var(--card-accent);
     box-shadow: var(--shadow-l);
+  }
+
+  /*
+   * Gated on a device that can actually hover. On a touch screen :hover latches
+   * after a tap and stays until something else is tapped, so the effect sticks
+   * on whatever was last touched. Focus states are deliberately not gated.
+   */
+  @media (hover: hover) {
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--card-accent);
+      box-shadow: var(--shadow-l);
+    }
   }
 
   /* ---- Head ---------------------------------------------------------------- */
@@ -122,9 +134,14 @@ const number = String(deliverable.index).padStart(2, '0');
     transition: transform var(--dur-slow) var(--ease-spring);
   }
 
-  .card:hover .card__arch,
   .card:focus-within .card__arch {
     transform: scaleY(1.12);
+  }
+
+  @media (hover: hover) {
+    .card:hover .card__arch {
+      transform: scaleY(1.12);
+    }
   }
 
   .card__number {

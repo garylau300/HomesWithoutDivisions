@@ -140,8 +140,10 @@ const logoAlt = `${t.site.name} ${t.site.nameSecondary}`;
     text-decoration-color: color-mix(in srgb, var(--c-eerie) 35%, transparent);
   }
 
-  .site-footer__nav a:hover {
-    text-decoration-color: currentColor;
+  @media (hover: hover) {
+    .site-footer__nav a:hover {
+      text-decoration-color: currentColor;
+    }
   }
 
   .site-footer__legal {
@@ -182,7 +184,9 @@ const logoAlt = `${t.site.name} ${t.site.nameSecondary}`;
     text-decoration: none;
   }
 
-  .site-footer__top:hover {
-    text-decoration: underline;
+  @media (hover: hover) {
+    .site-footer__top:hover {
+      text-decoration: underline;
+    }
   }
 </style>

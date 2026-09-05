@@ -2,6 +2,11 @@
  * Rasterises public/favicon.svg into the PNG sizes that some platforms still
  * require (Apple touch icon, and a legacy 32px favicon).
  *
+ * The lockup master it composites from lives in assets/, not public/: at 2640px
+ * it is 278 KB, no page ever requests it, and anything under public/ is
+ * deployed whether or not it is referenced. Source art belongs outside the
+ * document root.
+ *
  * Run with `node scripts/render-icons.mjs` after changing favicon.svg.
  * Uses the Chromium that Playwright already provides, so there is no image
  * library dependency.
@@ -38,7 +43,7 @@ for (const t of targets) {
   });
 
   const body = t.lockup
-    ? `<img src="data:image/png;base64,${readFileSync(join(root, 'public/brand/hwd-lockup.png')).toString('base64')}"
+    ? `<img src="data:image/png;base64,${readFileSync(join(root, 'assets/brand/hwd-lockup.png')).toString('base64')}"
             style="width:${t.lockupWidth ?? '72%'};height:auto">`
     : svg.replace('<svg ', `<svg width="${Math.round(width * (1 - t.pad * 2))}" height="${Math.round(height * (1 - t.pad * 2))}" `);
 

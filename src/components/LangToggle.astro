@@ -44,16 +44,9 @@ const t = useTranslations(locale);
 </nav>
 
 <script>
-  // Remember the reader's choice so the root URL can honour it next visit.
-  document.querySelectorAll<HTMLAnchorElement>('.lang-toggle__option').forEach((link) => {
-    link.addEventListener('click', () => {
-      try {
-        localStorage.setItem('hwd-lang', link.dataset.lang ?? '');
-      } catch {
-        // Private mode or blocked storage: the site works the same without it.
-      }
-    });
-  });
+  import { initLangMemory } from '../lib/client/lang';
+
+  initLangMemory();
 </script>
 
 <style>
@@ -103,8 +96,16 @@ const t = useTranslations(locale);
     color: var(--c-floral);
   }
 
-  .lang-toggle__option:not([aria-current]):hover {
-    color: var(--c-coral);
+  /*
+   * A neutral wash rather than Coral text: Coral on this track is 2.97:1, under
+   * the 4.5:1 a label needs, and gated on a real pointer so a tap does not
+   * leave the other language looking half-selected.
+   */
+  @media (hover: hover) {
+    .lang-toggle__option:not([aria-current]):hover {
+      background: color-mix(in srgb, var(--c-jet) 9%, transparent);
+      color: var(--ink);
+    }
   }
 
   @media (max-width: 24rem) {

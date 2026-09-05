@@ -1,0 +1,116 @@
+/*
+ * Print.
+ *
+ * These are documents people print: a social worker running off the guidance
+ * for a client, a tenant taking the pillars to a meeting with a landlord. The
+ * page has to survive the trip to paper.
+ *
+ * The first rule is the important one. Content is hidden ahead of being
+ * revealed on scroll, so printing a page the reader has not scrolled through
+ * puts blank space where nine tenths of the text should be. Print has no
+ * scrolling, so the reveal never happens and the page prints empty.
+ */
+@media print {
+  .js [data-reveal],
+  .js [data-reveal]:not(.is-revealed) {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* The spine is a scroll indicator; on paper it is just a bar down the page. */
+  .approach::after {
+    clip-path: none !important;
+  }
+
+  html {
+    /* No sticky header to clear once nothing is sticky. */
+    scroll-padding-top: 0;
+  }
+
+  body {
+    min-height: auto;
+    background: #fff;
+    color: #000;
+  }
+
+  /*
+   * Ink. Tinted bands and cards read as grey slabs on a mono printer and eat
+   * toner on a colour one; the text they carry is what matters.
+   */
+  .site-footer,
+  .about-hero,
+  .pillars-section,
+  .resources,
+  .pillars,
+  .approach__close,
+  .mission__method,
+  .card,
+  .picker {
+    background: none !important;
+    box-shadow: none !important;
+  }
+
+  .site-header {
+    position: static !important;
+  }
+
+  .site-header::before {
+    display: none !important;
+  }
+
+  /*
+   * Interface that cannot be used on paper. The lockup stays — a printed page
+   * handed to someone should say where it came from — and so does each card's
+   * text, including whichever download row is currently selected.
+   */
+  .skip-link,
+  .site-header__nav,
+  .lang-toggle,
+  .site-footer__top,
+  .segmented,
+  .picker__label,
+  .hero__decor,
+  .hero__figure {
+    display: none !important;
+  }
+
+  /* Keep a card, a method or a pillar whole rather than split across a fold. */
+  .card,
+  .mission__method,
+  .venn__item,
+  .approach__step,
+  .approach__close,
+  .section-head {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+
+  /* Underlines carry the link on paper, where colour and hover do not. */
+  a {
+    text-decoration: underline;
+  }
+
+  /*
+   * Buttons are dead ends in print, but the words on them are still a label
+   * worth reading, so they are flattened rather than hidden.
+   */
+  .button,
+  a.picker__action {
+    background: none !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  @page {
+    margin: 16mm;
+  }
+}
