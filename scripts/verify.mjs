@@ -268,6 +268,16 @@ console.log('\n── Download picker without JavaScript ───────�
   const shown = await picker.locator('[data-combo]:visible').count();
   const before = await picker.locator('[data-combo]:visible').getAttribute('data-combo');
 
+  /*
+   * The card lifts 4px under the pointer, moving the label out from under the
+   * cursor, and the two can end up trading places — the click then never finds
+   * a target that has settled. Collapsing transitions for the clicks removes
+   * that oscillation without touching what is being checked: the picker is pure
+   * CSS and switches identically either way. Emulated rather than injected as a
+   * stylesheet, because nothing can be injected into a page with no scripting.
+   */
+  await tab.emulateMedia({ reducedMotion: 'reduce' });
+
   // Switch format to DOCX by clicking its label, still without scripting.
   await tab.locator('label[for="pocket-tenancy-clinic-format-docx"]').click();
   const afterFormat = await picker.locator('[data-combo]:visible').getAttribute('data-combo');
@@ -275,6 +285,12 @@ console.log('\n── Download picker without JavaScript ───────�
   // Switch language to English too.
   await tab.locator('label[for="pocket-tenancy-clinic-lang-en"]').click();
   const afterLanguage = await picker.locator('[data-combo]:visible').getAttribute('data-combo');
+
+  /*
+   * Back to normal motion before the logo check below, so that it cannot pass
+   * on the reduced-motion rule when the no-scripting rule is what it tests.
+   */
+  await tab.emulateMedia({ reducedMotion: 'no-preference' });
 
   // The other cards must be untouched by all of that.
   const neighbour = await tab
